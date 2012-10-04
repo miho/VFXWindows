@@ -64,6 +64,7 @@ public class Window extends Pane {
 
     public Window(String title) {
         titleBar.setTitle(title);
+        titleBar.setPrefHeight(30);
         init();
     }
 
@@ -71,16 +72,12 @@ public class Window extends Pane {
         setStyle(CSS_STYLE);
         getChildren().add(titleBar);
 
-        setMinSize(10, 10);
-
         scaleTransform = new Scale(1, 1);
         scaleTransform.setPivotX(0);
         scaleTransform.setPivotY(0);
         scaleTransform.setPivotZ(0);
 
         getTransforms().add(scaleTransform);
-
-        autosize();
 
         initMouseEventHandlers();
 
@@ -182,36 +179,40 @@ public class Window extends Pane {
                                 getBoundsInLocal().getHeight()
                                 - offsetY / scaleY
                                 - getInsets().getTop();
-                        if (newHeight >= getMinHeight()) {
+                        
+                        if (newHeight >= minHeight(0) && (mousey <= y || offsetY > 0)) {
                             y += offsetY;
                             double scaledY = y / parentScaleY;
 
                             setLayoutY(scaledY);
-                            setPrefHeight(newHeight);
-
-                            autosize();
+                            setPrefHeight(newHeight); 
                         }
+                        
+                        
+                        autosize();
                     }
                     if (RESIZE_LEFT) {
+
+                        layout();
 
                         double newWidth =
                                 getBoundsInLocal().getWidth()
                                 - offsetX / scaleX
                                 - getInsets().getLeft();
 
-                        if (newWidth >= getMinWidth()) {
+                        if (newWidth > minWidth(0) && (mousex <= x || offsetX > 0)) {
                             x += offsetX;
                             double scaledX = x / parentScaleX;
 
-                            setLayoutX(scaledX);
-
-                            autosize();
-
                             setPrefWidth(newWidth);
+                            setLayoutX(scaledX);
                         }
+                        
+                        autosize();
                     }
 
                     if (RESIZE_BOTTOM) {
+                        layout();
                         double newHeight =
                                 getBoundsInLocal().getHeight()
                                 + offsetY / scaleY
@@ -453,7 +454,7 @@ public class Window extends Pane {
         }
 
         double newTitleBar = Math.max(titleBarWidth, windowWidth);
-        titleBar.resize(newTitleBar, 30);
+        titleBar.resize(newTitleBar, titleBar.getPrefHeight());
     }
 
     /**
@@ -462,25 +463,24 @@ public class Window extends Pane {
     Pane getTitlebar() {
         return titleBar;
     }
-//    @Override
-//    protected double computePrefWidth(double d) {
-//
-//        double result = super.computePrefWidth(d);
-//        result = Math.max(result, titleBar.computePrefWidth(0));
-//
-//        return result;
-//    }
-//    
-//    @Override
-//    protected double computeMinWidth(double d) {
-//
-//        double result = super.computeMinWidth(d);
-//        result = Math.max(result, titleBar.computeMinWidth(d));
-//
-//        System.out.println("MinW: " + result);
-//
-//        return result;
-//    }
+
+    @Override
+    protected double computeMinWidth(double d) {
+
+        double result = super.computeMinWidth(d);
+        result = Math.max(result, titleBar.prefWidth(d));
+
+        return result;
+    }
+    
+    @Override
+    protected double computeMinHeight(double d) {
+
+        double result = super.computeMinHeight(d);
+        result = Math.max(result, titleBar.prefHeight(d));
+
+        return result;
+    }
 }
 
 class TitleBar extends HBox {
