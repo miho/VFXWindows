@@ -4,6 +4,8 @@
  */
 package eu.mihosoft.vrl.fxwindows;
 
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -12,10 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -82,21 +81,26 @@ public class Window extends Pane {
 
         initMouseEventHandlers();
 
-        titleBar.addLeftIcon(new TestIcon());
-        titleBar.addRightIcon(new TestIcon());
+        titleBar.addLeftIcon(new TestIcon(new Color(0,0,1.0,0.1)));
+        titleBar.addLeftIcon(new TestIcon(new Color(0,1.0,0,0.1)));
+        titleBar.addRightIcon(new TestIcon(new Color(0,1.0,0,0.1)));
+        titleBar.addRightIcon(new TestIcon(new Color(0,0,1.0,0.1)));
     }
 
     static class TestIcon extends Pane {
 
-        public TestIcon() {
-            setMinSize(10, 10);
-            setMaxSize(50, 50);
+        public TestIcon(Color c) {
             Rectangle rect = new Rectangle();
-            rect.setFill(new Color(0.1, 0.1, 0.1, 1.0));
+            rect.setFill(c);
             getChildren().add(rect);
-            
+
             rect.widthProperty().bind(this.widthProperty());
             rect.heightProperty().bind(this.heightProperty());
+        }
+
+        @Override
+        protected double computeMinWidth(double h) {
+            return super.computeMaxWidth(h);
         }
     }
 
@@ -183,15 +187,15 @@ public class Window extends Pane {
                                 getBoundsInLocal().getHeight()
                                 - offsetY / scaleY
                                 - getInsets().getTop();
-                        
+
                         if (newHeight >= minHeight(0) && (mouseY <= nodeY || offsetY > 0)) {
                             nodeY += offsetY;
                             double scaledY = nodeY / parentScaleY;
 
                             setLayoutY(scaledY);
-                            setPrefHeight(newHeight); 
+                            setPrefHeight(newHeight);
                         }
-                        
+
                         autosize();
                     }
                     if (RESIZE_LEFT) {
@@ -210,7 +214,7 @@ public class Window extends Pane {
                             setPrefWidth(newWidth);
                             setLayoutX(scaledX);
                         }
-                        
+
                         autosize();
                     }
 
@@ -476,7 +480,7 @@ public class Window extends Pane {
 
         return result;
     }
-    
+
     @Override
     protected double computeMinHeight(double d) {
 
@@ -489,8 +493,8 @@ public class Window extends Pane {
 
 class TitleBar extends HBox {
 
-    private HBox leftIconPane = new IconBox();
-    private HBox rightIconPane = new IconBox();
+    private HBox leftIconPane;
+    private HBox rightIconPane;
     private Text label = new Text();
     public static final String CSS_STYLE =
             "  -fx-glass-color: rgba(42, 42, 42, 0.9);\n"
@@ -509,30 +513,11 @@ class TitleBar extends HBox {
         label.setTextAlignment(TextAlignment.CENTER);
         label.setStyle("-fx-stroke: rgba(255,255,255,50); -fx-fill: rgba(255,255,255,50);");
 
-//        VBox leftIconOuterBox = new VBox();
-//        leftIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
-//        leftIconOuterBox.getChildren().add(leftIconPane);
-//        leftIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
-//
-//        VBox rightIconOuterBox = new VBox();
-//        rightIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
-//        rightIconOuterBox.getChildren().add(rightIconPane);
-//        rightIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
+        leftIconPane = new IconBox(this);
+        rightIconPane = new IconBox(this);
 
-//        setAlignment(Pos.CENTER);
-//        HBox.setHgrow(leftIconOuterBox, Priority.NEVER);
-//        HBox.setHgrow(rightIconOuterBox, Priority.NEVER);
-//        getChildren().add(leftIconOuterBox);
-//        getChildren().add(VFXLayoutUtil.createHBoxFiller());
-//        getChildren().add(label);
-//        getChildren().add(VFXLayoutUtil.createHBoxFiller());
-//        getChildren().add(rightIconOuterBox);
-        
         setAlignment(Pos.CENTER);
-        
-//        HBox.setHgrow(leftIconPane, Priority.NEVER);
-//        HBox.setHgrow(rightIconPane, Priority.NEVER);
-        
+
         getChildren().add(leftIconPane);
         getChildren().add(VFXLayoutUtil.createHBoxFiller());
         getChildren().add(label);
@@ -555,19 +540,6 @@ class TitleBar extends HBox {
     public void addRightIcon(Node n) {
         rightIconPane.getChildren().add(n);
     }
-//    @Override
-//    protected double computePrefWidth(double d) {
-//        double result = prefWidth(d) + leftIconPane.getPrefWidth() + label.getBoundsInLocal().getWidth();
-//
-//        result = Math.max(result, super.computePrefWidth(d));
-//
-//        return result;
-//    }
-//    
-//    @Override
-//    protected double computeMinWidth(double d) {
-//        return computePrefWidth(d);
-//    }
 }
 
 enum ResizeMode {
@@ -584,23 +556,59 @@ enum ResizeMode {
 }
 
 class IconBox extends HBox {
-    
+
+    private TitleBar titleBar;
+
+    public IconBox(final TitleBar titleBar) {
+        this.titleBar = titleBar;
+        minWidthProperty().bind(new DoubleBinding() {
+            {
+                super.bind(minWidthProperty(), titleBar.heightProperty());
+            }
+
+            @Override
+            protected double computeValue() {
+                double v = (titleBar.getHeight() - titleBar.getInsets().getTop()
+                        - titleBar.getInsets().getBottom())
+                        * getManagedChildren().size();
+                return v;
+            }
+        });
+
+        prefWidthProperty().bind(new DoubleBinding() {
+            {
+                super.bind(minWidthProperty(), titleBar.heightProperty());
+            }
+
+            @Override
+            protected double computeValue() {
+                double v = (titleBar.getHeight() - titleBar.getInsets().getTop()
+                        - titleBar.getInsets().getBottom())
+                        * getManagedChildren().size();
+                return v;
+            }
+        });
+    }
+
     @Override
     protected void layoutChildren() {
+
+        int childrenCount = getManagedChildren().size();
+        double childWidth = getWidth() / childrenCount;
+
+        for (Node n : getManagedChildren()) {
+            if (n instanceof Region) {
+                Region r = (Region) n;
+                r.setMinSize(childWidth, childWidth);
+                r.setPrefSize(childWidth, childWidth);
+            }
+        }
+
         super.layoutChildren();
     }
-    
+
     @Override
-    protected double computeMinWidth(double h) {
-//        double result = super.computeMinWidth(h);
-        
-        double prefChildWidth = 0;
-        
-        for(Node n : getManagedChildren()) {
-            prefChildWidth+=n.prefWidth(h);
-            System.out.println("n:w= " + n.maxWidth(h));
-        }
-        
-        return prefChildWidth;
+    protected double computeMinHeight(double w) {
+        return getManagedChildren().get(0).minHeight(w);
     }
 }
