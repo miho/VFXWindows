@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -38,11 +39,11 @@ public class Window extends Pane {
             + "  -fx-border-radius: 3;\n"
             + "  -fx-background-radius: 3;\n";
     // node position
-    private double x = 0;
-    private double y = 0;
+    private double nodeX = 0;
+    private double nodeY = 0;
     // mouse position
-    private double mousex = 0;
-    private double mousey = 0;
+    private double mouseX = 0;
+    private double mouseY = 0;
     private Node view;
     private boolean dragging = false;
     private boolean moveToFront = true;
@@ -64,7 +65,7 @@ public class Window extends Pane {
 
     public Window(String title) {
         titleBar.setTitle(title);
-        titleBar.setPrefHeight(30);
+        titleBar.setPrefHeight(50);
         init();
     }
 
@@ -85,14 +86,17 @@ public class Window extends Pane {
         titleBar.addRightIcon(new TestIcon());
     }
 
-    static class TestIcon extends StackPane {
+    static class TestIcon extends Pane {
 
         public TestIcon() {
-            setMinSize(20, 20);
-            setMaxSize(30, 30);
-            Rectangle rect = new Rectangle(22, 22);
+            setMinSize(10, 10);
+            setMaxSize(50, 50);
+            Rectangle rect = new Rectangle();
             rect.setFill(new Color(0.1, 0.1, 0.1, 1.0));
             getChildren().add(rect);
+            
+            rect.widthProperty().bind(this.widthProperty());
+            rect.heightProperty().bind(this.heightProperty());
         }
     }
 
@@ -114,11 +118,11 @@ public class Window extends Pane {
                         getValue().getMyy();
 
                 // record the current mouse X and Y position on Node
-                mousex = event.getSceneX();
-                mousey = event.getSceneY();
+                mouseX = event.getSceneX();
+                mouseY = event.getSceneY();
 
-                x = n.getLayoutX() * parentScaleX;
-                y = n.getLayoutY() * parentScaleY;
+                nodeX = n.getLayoutX() * parentScaleX;
+                nodeY = n.getLayoutY() * parentScaleY;
 
                 if (isMoveToFront()) {
                     toFront();
@@ -147,16 +151,16 @@ public class Window extends Pane {
 
                 // Get the exact moved X and Y
 
-                double offsetX = event.getSceneX() - mousex;
-                double offsetY = event.getSceneY() - mousey;
+                double offsetX = event.getSceneX() - mouseX;
+                double offsetY = event.getSceneY() - mouseY;
 
                 if (resizeMode == ResizeMode.NONE) {
 
-                    x += offsetX;
-                    y += offsetY;
+                    nodeX += offsetX;
+                    nodeY += offsetY;
 
-                    double scaledX = x * 1 / parentScaleX;
-                    double scaledY = y * 1 / parentScaleY;
+                    double scaledX = nodeX * 1 / parentScaleX;
+                    double scaledY = nodeY * 1 / parentScaleY;
 
                     n.setLayoutX(scaledX);
                     n.setLayoutY(scaledY);
@@ -180,14 +184,13 @@ public class Window extends Pane {
                                 - offsetY / scaleY
                                 - getInsets().getTop();
                         
-                        if (newHeight >= minHeight(0) && (mousey <= y || offsetY > 0)) {
-                            y += offsetY;
-                            double scaledY = y / parentScaleY;
+                        if (newHeight >= minHeight(0) && (mouseY <= nodeY || offsetY > 0)) {
+                            nodeY += offsetY;
+                            double scaledY = nodeY / parentScaleY;
 
                             setLayoutY(scaledY);
                             setPrefHeight(newHeight); 
                         }
-                        
                         
                         autosize();
                     }
@@ -200,9 +203,9 @@ public class Window extends Pane {
                                 - offsetX / scaleX
                                 - getInsets().getLeft();
 
-                        if (newWidth > minWidth(0) && (mousex <= x || offsetX > 0)) {
-                            x += offsetX;
-                            double scaledX = x / parentScaleX;
+                        if (newWidth > minWidth(0) && (mouseX <= nodeX || offsetX > 0)) {
+                            nodeX += offsetX;
+                            double scaledX = nodeX / parentScaleX;
 
                             setPrefWidth(newWidth);
                             setLayoutX(scaledX);
@@ -211,7 +214,7 @@ public class Window extends Pane {
                         autosize();
                     }
 
-                    if (RESIZE_BOTTOM) {
+                    if (RESIZE_BOTTOM && (mouseY >= nodeY + getHeight() || offsetY < 0)) {
                         layout();
                         double newHeight =
                                 getBoundsInLocal().getHeight()
@@ -220,7 +223,7 @@ public class Window extends Pane {
                         setPrefHeight(newHeight);
                         autosize();
                     }
-                    if (RESIZE_RIGHT) {
+                    if (RESIZE_RIGHT && (mouseX >= nodeX + getWidth() || offsetX < 0)) {
                         double newWidth =
                                 getBoundsInLocal().getWidth()
                                 + offsetX / scaleX
@@ -231,8 +234,8 @@ public class Window extends Pane {
                 }
 
                 // again set current Mouse x AND y position
-                mousex = event.getSceneX();
-                mousey = event.getSceneY();
+                mouseX = event.getSceneX();
+                mouseY = event.getSceneY();
 
                 event.consume();
             }
@@ -485,8 +488,8 @@ public class Window extends Pane {
 
 class TitleBar extends HBox {
 
-    private HBox leftIconPane = new HBox();
-    private HBox rightIconPane = new HBox();
+    private HBox leftIconPane = new IconBox();
+    private HBox rightIconPane = new IconBox();
     private Text label = new Text();
     public static final String CSS_STYLE =
             "  -fx-glass-color: rgba(42, 42, 42, 0.9);\n"
@@ -505,24 +508,35 @@ class TitleBar extends HBox {
         label.setTextAlignment(TextAlignment.CENTER);
         label.setStyle("-fx-stroke: rgba(255,255,255,50); -fx-fill: rgba(255,255,255,50);");
 
-        VBox leftIconOuterBox = new VBox();
-        leftIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
-        leftIconOuterBox.getChildren().add(leftIconPane);
-        leftIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
+//        VBox leftIconOuterBox = new VBox();
+//        leftIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
+//        leftIconOuterBox.getChildren().add(leftIconPane);
+//        leftIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
+//
+//        VBox rightIconOuterBox = new VBox();
+//        rightIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
+//        rightIconOuterBox.getChildren().add(rightIconPane);
+//        rightIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
 
-        VBox rightIconOuterBox = new VBox();
-        rightIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
-        rightIconOuterBox.getChildren().add(rightIconPane);
-        rightIconOuterBox.getChildren().add(VFXLayoutUtil.createVBoxFiller());
-
+//        setAlignment(Pos.CENTER);
+//        HBox.setHgrow(leftIconOuterBox, Priority.NEVER);
+//        HBox.setHgrow(rightIconOuterBox, Priority.NEVER);
+//        getChildren().add(leftIconOuterBox);
+//        getChildren().add(VFXLayoutUtil.createHBoxFiller());
+//        getChildren().add(label);
+//        getChildren().add(VFXLayoutUtil.createHBoxFiller());
+//        getChildren().add(rightIconOuterBox);
+        
         setAlignment(Pos.CENTER);
-        HBox.setHgrow(leftIconOuterBox, Priority.NEVER);
-        HBox.setHgrow(rightIconOuterBox, Priority.NEVER);
-        getChildren().add(leftIconOuterBox);
+        
+//        HBox.setHgrow(leftIconPane, Priority.NEVER);
+//        HBox.setHgrow(rightIconPane, Priority.NEVER);
+        
+        getChildren().add(leftIconPane);
         getChildren().add(VFXLayoutUtil.createHBoxFiller());
         getChildren().add(label);
         getChildren().add(VFXLayoutUtil.createHBoxFiller());
-        getChildren().add(rightIconOuterBox);
+        getChildren().add(rightIconPane);
     }
 
     public void setTitle(String title) {
@@ -566,4 +580,26 @@ enum ResizeMode {
     TOP_RIGHT,
     BOTTOM_LEFT,
     BOTTOM_RIGHT
+}
+
+class IconBox extends HBox {
+    
+    @Override
+    protected void layoutChildren() {
+        super.layoutChildren();
+    }
+    
+    @Override
+    protected double computeMinWidth(double h) {
+//        double result = super.computeMinWidth(h);
+        
+        double prefChildWidth = 0;
+        
+        for(Node n : getManagedChildren()) {
+            prefChildWidth+=n.prefWidth(h);
+            System.out.println("n:w= " + n.maxWidth(h));
+        }
+        
+        return prefChildWidth;
+    }
 }
