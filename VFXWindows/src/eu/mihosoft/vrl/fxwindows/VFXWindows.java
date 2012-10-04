@@ -51,8 +51,11 @@ public class VFXWindows extends Application {
 
             // add numNodes instances of DraggableNode to the root pane
             for (int i = 0; i < numNodes; i++) {
-                DraggableNode node = new DraggableNode();
-                node.setPrefSize(98, 80);
+                Window node = new Window("Window (" + (i+1) + "," + (j+1) + ")");
+                WindowUtil.makeDraggable(node);
+                WindowUtil.makeResizable(node);
+                node.setPrefSize(130, 80);
+                node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 // define the style via css
                 node.setStyle(CSS_STYLE);
                 // position the node
@@ -62,6 +65,8 @@ public class VFXWindows extends Application {
                 root.getChildren().add(node);
             }
         }
+        
+//        root.layout();
 
         // finally, show the stage
         primaryStage.setTitle("Draggable Node 02");
@@ -131,6 +136,8 @@ class DraggableNode extends RootPane {
         scaleTransform.setPivotZ(0);
 
         getTransforms().add(scaleTransform);
+        
+        if (true)return;
 
         onMousePressedProperty().set(new EventHandler<MouseEvent>() {
             @Override
@@ -158,7 +165,6 @@ class DraggableNode extends RootPane {
                 if (isMoveToFront()) {
                     toFront();
                 }
-
             }
         });
 
@@ -458,22 +464,22 @@ class DraggableNode extends RootPane {
     }
 }
 
-class RootPane extends Pane {
-
-    @Override
-    protected void layoutChildren() {
-        for (Node n : getManagedChildren()) {
-            if (n instanceof Region) {
-                Region p = (Region) n;
-
-                double width = Math.max(p.getMinWidth(), p.getPrefWidth());
-                double height = Math.max(p.getMinHeight(), p.getPrefHeight());
-
-                n.resize(width, height);
-            }
-        }
-    }
-}
+//class RootPane extends Pane {
+//
+//    @Override
+//    protected void layoutChildren() {
+//        for (Node n : getManagedChildren()) {
+//            if (n instanceof Region) {
+//                Region p = (Region) n;
+//
+//                double width = Math.max(p.getMinWidth(), p.getPrefWidth());
+//                double height = Math.max(p.getMinHeight(), p.getPrefHeight());
+//
+//                n.resize(width, height);
+//            }
+//        }
+//    }
+//}
 
 enum ResizeMode {
 
