@@ -224,6 +224,7 @@ public class Window extends Pane {
                         autosize();
                     }
                     if (RESIZE_RIGHT && (mouseX >= nodeX + getWidth() || offsetX < 0)) {
+                        layout();
                         double newWidth =
                                 getBoundsInLocal().getWidth()
                                 + offsetX / scaleX
