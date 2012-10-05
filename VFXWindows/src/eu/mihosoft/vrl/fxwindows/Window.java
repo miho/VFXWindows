@@ -64,7 +64,7 @@ public class Window extends Pane {
 
     public Window(String title) {
         titleBar.setTitle(title);
-        titleBar.setPrefHeight(50);
+        titleBar.setPrefHeight(30);
         init();
     }
 
@@ -218,7 +218,7 @@ public class Window extends Pane {
                         autosize();
                     }
 
-                    if (RESIZE_BOTTOM && (mouseY >= nodeY + getHeight() || offsetY < 0)) {
+                    if (RESIZE_BOTTOM && (mouseY >= nodeY + getHeight() * scaleY || offsetY < 0)) {
                         layout();
                         double newHeight =
                                 getBoundsInLocal().getHeight()
@@ -227,7 +227,7 @@ public class Window extends Pane {
                         setPrefHeight(newHeight);
                         autosize();
                     }
-                    if (RESIZE_RIGHT && (mouseX >= nodeX + getWidth() || offsetX < 0)) {
+                    if (RESIZE_RIGHT && (mouseX >= nodeX + getWidth()  * scaleX || offsetX < 0)) {
                         layout();
                         double newWidth =
                                 getBoundsInLocal().getWidth()
@@ -349,9 +349,6 @@ public class Window extends Pane {
                 scaleTransform.setPivotX(0);
                 scaleTransform.setPivotZ(0);
 
-//                setScaleX(scaleValue);
-//                setScaleY(scaleValue);
-
                 event.consume();
             }
         });
@@ -453,8 +450,6 @@ public class Window extends Pane {
         titleBar.relocate(0, 0);
         double titleBarWidth = titleBar.prefWidth(0);
         double windowWidth = getWidth();
-
-//        System.out.println("t: " + titleBarWidth + ", w: " + windowWidth);
 
         if (titleBarWidth > windowWidth) {
 

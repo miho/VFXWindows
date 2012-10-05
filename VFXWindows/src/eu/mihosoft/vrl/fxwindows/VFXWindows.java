@@ -44,9 +44,9 @@ public class VFXWindows extends Application {
 
         final Scene scene = new Scene(root, 800, 700, Color.rgb(160, 160, 160));
 
-        for (int j = 0; j < 6; j++) {
+        for (int j = 0; j < 4; j++) {
 
-            final int numNodes = 6; // number of nodes to add
+            final int numNodes = 4; // number of nodes to add
             final double spacing = 30; // spacing between nodes
 
             // add numNodes instances of DraggableNode to the root pane
@@ -54,7 +54,7 @@ public class VFXWindows extends Application {
                 Window node = new Window("Window (" + (i+1) + "," + (j+1) + ")");
 //                WindowUtil.makeDraggable(node);
 //                WindowUtil.makeResizable(node);
-                node.setPrefSize(130, 80);
+                node.setPrefSize(240, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 // define the style via css
                 node.setStyle(CSS_STYLE);
