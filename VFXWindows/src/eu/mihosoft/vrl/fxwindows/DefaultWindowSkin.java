@@ -6,17 +6,16 @@ package eu.mihosoft.vrl.fxwindows;
 
 import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.skin.SkinBase;
+import java.util.ArrayList;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -24,7 +23,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.transform.Scale;
 
 /**
  *
@@ -64,28 +62,32 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     }
 
     private void init() {
-//        root.setManaged(false);
+
         getChildren().add(root);
         root.getChildren().add(titleBar);
-        root.getChildren().add(control.getView());
-        control.getView().setManaged(false);
 
-//        scaleTransform = new Scale(1, 1);
-//        scaleTransform.setPivotX(0);
-//        scaleTransform.setPivotY(0);
-//        scaleTransform.setPivotZ(0);
-//
-//        getTransforms().add(scaleTransform);
 
         initMouseEventHandlers();
-        
-        titleBar.setTitle(control.getTitle());
-        
-        control.titleProperty().addListener(new ChangeListener<String>() {
 
+        titleBar.setTitle(control.getTitle());
+
+        control.titleProperty().addListener(new ChangeListener<String>() {
             @Override
-            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-                titleBar.setTitle(t1);
+            public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
+                titleBar.setTitle(newValue);
+                control.autosize();
+            }
+        });
+
+        root.getChildren().add(control.getContentPane());
+        control.getContentPane().setManaged(false);
+
+        control.contentPaneProperty().addListener(new ChangeListener<Pane>() {
+            @Override
+            public void changed(ObservableValue<? extends Pane> ov, Pane oldValue, Pane newValue) {
+                root.getChildren().remove(oldValue);
+                root.getChildren().add(newValue);
+                newValue.setManaged(false);
             }
         });
 
@@ -93,8 +95,6 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         titleBar.addLeftIcon(new TestIcon(new Color(0, 1.0, 0, 0.1)));
         titleBar.addRightIcon(new TestIcon(new Color(0, 1.0, 0, 0.1)));
         titleBar.addRightIcon(new TestIcon(new Color(0, 0, 1.0, 0.1)));
-
-
     }
 
     static class TestIcon extends Pane {
@@ -179,8 +179,15 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                     n.setLayoutX(scaledX);
                     n.setLayoutY(scaledY);
 
+                    double nX = Math.max(0, scaledX);
+                    double nY = Math.max(0, scaledY);
+
+                    n.setLayoutX(nX);
+                    n.setLayoutY(nY);
+                    
+                    n.getParent().requestLayout();
+
                     dragging = true;
-                    control.autosize();
 
                 } else {
 
@@ -440,6 +447,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     @Override
     protected void layoutChildren() {
 
+        System.out.println("skin: layout " + System.currentTimeMillis());
+
         super.layoutChildren();
 
         root.relocate(0, 0);
@@ -462,10 +471,10 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
         titleBar.resize(newTitleBarWidth, titleBar.prefHeight(0));
 
-        double viewWidth = Math.max(control.getView().prefWidth(0),
+        double viewWidth = Math.max(control.getContentPane().prefWidth(0),
                 root.getWidth());
-        
-        double viewHeight = Math.max(control.getView().prefHeight(0),
+
+        double viewHeight = Math.max(control.getContentPane().prefHeight(0),
                 root.getHeight() - titleBar.getHeight());
 
         double leftAndRight = getInsets().getLeft() + getInsets().getRight();
@@ -476,14 +485,14 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
         contentScale = Math.min(scaleWidth, scaleHeight);
 
-        control.getView().resize(
+        control.getContentPane().resize(
                 viewWidth - leftAndRight / contentScale,
                 viewHeight - topAndBottom / contentScale);
 
         control.getContentScaleTransform().setX(contentScale);
         control.getContentScaleTransform().setY(contentScale);
 
-        control.getView().relocate(
+        control.getContentPane().relocate(
                 getInsets().getLeft() * 2,
                 titleBar.prefHeight(0) + getInsets().getTop());
     }
@@ -519,7 +528,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         double result = root.minHeight(d);
         result = Math.max(result,
                 titleBar.prefHeight(d)
-                + control.getView().minHeight(d) * contentScale
+                + control.getContentPane().minHeight(d) * contentScale
                 + getInsets().getBottom());
 
         return result;
@@ -556,11 +565,11 @@ class TitleBar extends HBox {
 
         setAlignment(Pos.CENTER);
 
-        getChildren().add(leftIconPane);
+//        getChildren().add(leftIconPane);
         getChildren().add(VFXLayoutUtil.createHBoxFiller());
         getChildren().add(label);
         getChildren().add(VFXLayoutUtil.createHBoxFiller());
-        getChildren().add(rightIconPane);
+//        getChildren().add(rightIconPane);
 
 //        setPrefWidth(USE_COMPUTED_SIZE);
 //        setPrefHeight(USE_COMPUTED_SIZE);
@@ -647,6 +656,10 @@ class IconBox extends HBox {
 
     @Override
     protected double computeMinHeight(double w) {
-        return getManagedChildren().get(0).minHeight(w);
+        if (!getManagedChildren().isEmpty()) {
+            return getManagedChildren().get(0).minHeight(w);
+        }
+
+        return super.computeMinHeight(w);
     }
 }
