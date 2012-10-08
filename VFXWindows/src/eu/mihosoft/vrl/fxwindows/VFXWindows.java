@@ -6,15 +6,19 @@ package eu.mihosoft.vrl.fxwindows;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 
@@ -52,6 +56,12 @@ public class VFXWindows extends Application {
             // add numNodes instances of DraggableNode to the root pane
             for (int i = 0; i < numNodes; i++) {
                 Window node = new Window("Window (" + (i+1) + "," + (j+1) + ")");
+                
+                Button btn = new Button("TestBtn");
+                
+                StackPane.setAlignment(btn, Pos.CENTER);
+                
+                node.getView().getChildren().add(btn);
 //                WindowUtil.makeDraggable(node);
 //                WindowUtil.makeResizable(node);
                 node.setPrefSize(240, 120);

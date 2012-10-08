@@ -65,6 +65,9 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         getChildren().add(root);
         root.getChildren().add(titleBar);
         root.getChildren().add(control.getView());
+        control.getView().setManaged(false);
+
+        control.getView().setStyle("-fx-border-color: rgb(0,0,0)");
 
 //        scaleTransform = new Scale(1, 1);
 //        scaleTransform.setPivotX(0);
@@ -79,8 +82,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         titleBar.addLeftIcon(new TestIcon(new Color(0, 1.0, 0, 0.1)));
         titleBar.addRightIcon(new TestIcon(new Color(0, 1.0, 0, 0.1)));
         titleBar.addRightIcon(new TestIcon(new Color(0, 0, 1.0, 0.1)));
-        
-        
+
+
     }
 
     static class TestIcon extends Pane {
@@ -426,12 +429,14 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     protected void layoutChildren() {
 
         super.layoutChildren();
-        
-        root.relocate(0,0);
-        root.resize(root.getWidth()+getInsets().getLeft()+getInsets().getRight(),
-                root.getHeight()+getInsets().getTop()+getInsets().getBottom());
 
-        titleBar.relocate(0,0);
+        root.relocate(0, 0);
+        root.resize(root.getWidth()
+                + getInsets().getLeft() + getInsets().getRight(),
+                root.getHeight()
+                + getInsets().getTop() + getInsets().getBottom());
+
+        titleBar.relocate(0, 0);
         double titleBarWidth = titleBar.prefWidth(0);
         double windowWidth = root.getWidth();
 
@@ -444,9 +449,18 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 windowWidth);
 
         titleBar.resize(newTitleBarWidth, titleBar.prefHeight(0));
-        control.getView().relocate(getInsets().getLeft(), titleBar.prefHeight(0));
-        control.getView().resize(getWidth()-getInsets().getRight(), 
-                getHeight()-getInsets().getBottom());
+        control.getView().relocate(
+                getInsets().getLeft(), titleBar.prefHeight(0));
+
+        double viewWidth = Math.max(control.getView().getPrefWidth(),
+                root.getWidth());
+        double viewHeight = Math.max(control.getView().getPrefHeight(),
+                root.getHeight() - titleBar.getHeight());
+
+
+        control.getView().resize(
+                viewWidth - getInsets().getLeft() - getInsets().getRight(),
+                viewHeight - getInsets().getBottom());
     }
 
     /**

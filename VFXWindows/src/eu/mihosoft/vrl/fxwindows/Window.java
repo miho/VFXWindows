@@ -4,9 +4,9 @@
  */
 package eu.mihosoft.vrl.fxwindows;
 
-import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.transform.Scale;
 
 /**
@@ -18,7 +18,7 @@ public class Window extends Control {
     public static final String DEFAULT_STYLE_CLASS = "window";
     public static final String DEFAULT_STYLE = "/eu/mihosoft/vrl/fxwindows/default.css";
 
-    private Pane view = new Pane();
+    private StackPane view = new StackPane();
     private boolean moveToFront = true;
     private Scale scaleTransform;
     private boolean zoomable = true;
