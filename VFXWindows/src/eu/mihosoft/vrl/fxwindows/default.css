@@ -1,0 +1,22 @@
+/* 
+    Document   : default.css
+    Created on : 08.10.2012, 10:17:51
+    Author     : Michael Hoffer <info@michaelhoffer.de>
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.window {
+    -fx-skin: "eu.mihosoft.vrl.fxwindows.DefaultWindowSkin";
+    -fx-glass-color: rgba(85, 132, 160, 0.9);
+    -fx-alignment: center;
+    -fx-font-size: 20;
+    -fx-background-color: linear-gradient(to bottom, derive(-fx-glass-color, 50%), -fx-glass-color);
+    -fx-border-color: derive(-fx-glass-color, -60%);
+    -fx-border-width: 2;
+    -fx-background-insets: 1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    /*-fx-padding: -2;*/
+}
+
