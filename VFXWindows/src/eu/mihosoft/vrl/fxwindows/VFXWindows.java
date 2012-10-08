@@ -57,7 +57,9 @@ public class VFXWindows extends Application {
             for (int i = 0; i < numNodes; i++) {
                 Window node = new Window("Window (" + (i+1) + "," + (j+1) + ")");
                 
-                Button btn = new Button("TestBtn");
+                Button btn = new Button("TestBtn TestBtn TestBtn");
+                
+                btn.setMinWidth(400);
                 
                 StackPane.setAlignment(btn, Pos.CENTER);
                 

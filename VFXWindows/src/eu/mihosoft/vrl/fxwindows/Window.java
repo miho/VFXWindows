@@ -20,7 +20,7 @@ public class Window extends Control {
 
     private StackPane view = new StackPane();
     private boolean moveToFront = true;
-    private Scale scaleTransform;
+    private Scale contentScaleTransform;
     private boolean zoomable = true;
     private double minScale = 0.1;
     private double maxScale = 10;
@@ -39,12 +39,12 @@ public class Window extends Control {
 
         getStyleClass().setAll(DEFAULT_STYLE_CLASS);
 
-//        scaleTransform = new Scale(1, 1);
-//        scaleTransform.setPivotX(0);
-//        scaleTransform.setPivotY(0);
-//        scaleTransform.setPivotZ(0);
-//
-//        getTransforms().add(scaleTransform);
+        contentScaleTransform = new Scale(1, 1);
+        getContentScaleTransform().setPivotX(0);
+        getContentScaleTransform().setPivotY(0);
+        getContentScaleTransform().setPivotZ(0);
+
+        view.getTransforms().add(getContentScaleTransform());
     }
 
     @Override
@@ -146,4 +146,11 @@ public class Window extends Control {
 //    Scale getScaleTransform() {
 //        return scaleTransform;
 //    }
+
+    /**
+     * @return the contentScaleTransform
+     */
+    public Scale getContentScaleTransform() {
+        return contentScaleTransform;
+    }
 }

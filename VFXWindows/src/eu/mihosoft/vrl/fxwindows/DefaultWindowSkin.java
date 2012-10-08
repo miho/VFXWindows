@@ -449,18 +449,33 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 windowWidth);
 
         titleBar.resize(newTitleBarWidth, titleBar.prefHeight(0));
-        control.getView().relocate(
-                getInsets().getLeft(), titleBar.prefHeight(0));
 
-        double viewWidth = Math.max(control.getView().getPrefWidth(),
+
+        double viewWidth = Math.max(control.getView().prefWidth(0),
                 root.getWidth());
-        double viewHeight = Math.max(control.getView().getPrefHeight(),
+        double viewHeight = Math.max(control.getView().prefHeight(0),
                 root.getHeight() - titleBar.getHeight());
 
+        double leftAndRight = getInsets().getLeft() + getInsets().getRight();
+        double topAndBottom = getInsets().getTop() + getInsets().getBottom();
+
+
+
+        double scaleWidth = (root.getWidth() - leftAndRight) / viewWidth;
+        double scaleHeight = (root.getHeight() - topAndBottom) / viewHeight;
+
+        double scale = Math.min(scaleWidth, scaleHeight);
 
         control.getView().resize(
-                viewWidth - getInsets().getLeft() - getInsets().getRight(),
-                viewHeight - getInsets().getBottom());
+                viewWidth - leftAndRight / scale,
+                viewHeight - topAndBottom / scale);
+
+        control.getContentScaleTransform().setX(scale);
+        control.getContentScaleTransform().setY(scale);
+
+        control.getView().relocate(
+                getInsets().getLeft() * 2,
+                titleBar.prefHeight(0) + getInsets().getTop());
     }
 
     /**
