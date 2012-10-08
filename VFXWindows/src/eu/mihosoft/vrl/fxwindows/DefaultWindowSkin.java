@@ -8,6 +8,8 @@ import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.skin.SkinBase;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -51,6 +53,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     private TitleBar titleBar = new TitleBar();
     private Window control;
     private Pane root = new Pane();
+    private double contentScale = 1.0;
 
     public DefaultWindowSkin(Window w) {
         super(w, new BehaviorBase<Window>(w));
@@ -67,8 +70,6 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         root.getChildren().add(control.getView());
         control.getView().setManaged(false);
 
-        control.getView().setStyle("-fx-border-color: rgb(0,0,0)");
-
 //        scaleTransform = new Scale(1, 1);
 //        scaleTransform.setPivotX(0);
 //        scaleTransform.setPivotY(0);
@@ -77,6 +78,16 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 //        getTransforms().add(scaleTransform);
 
         initMouseEventHandlers();
+        
+        titleBar.setTitle(control.getTitle());
+        
+        control.titleProperty().addListener(new ChangeListener<String>() {
+
+            @Override
+            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
+                titleBar.setTitle(t1);
+            }
+        });
 
         titleBar.addLeftIcon(new TestIcon(new Color(0, 0, 1.0, 0.1)));
         titleBar.addLeftIcon(new TestIcon(new Color(0, 1.0, 0, 0.1)));
@@ -243,6 +254,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                         if (mouseX >= nodeX + control.getWidth() * scaleX || offsetX < 0) {
                             control.setPrefWidth(newWidth);
                         }
+
                         control.autosize();
                     }
                 }
@@ -450,28 +462,26 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
         titleBar.resize(newTitleBarWidth, titleBar.prefHeight(0));
 
-
         double viewWidth = Math.max(control.getView().prefWidth(0),
                 root.getWidth());
+        
         double viewHeight = Math.max(control.getView().prefHeight(0),
                 root.getHeight() - titleBar.getHeight());
 
         double leftAndRight = getInsets().getLeft() + getInsets().getRight();
         double topAndBottom = getInsets().getTop() + getInsets().getBottom();
 
-
-
         double scaleWidth = (root.getWidth() - leftAndRight) / viewWidth;
         double scaleHeight = (root.getHeight() - topAndBottom) / viewHeight;
 
-        double scale = Math.min(scaleWidth, scaleHeight);
+        contentScale = Math.min(scaleWidth, scaleHeight);
 
         control.getView().resize(
-                viewWidth - leftAndRight / scale,
-                viewHeight - topAndBottom / scale);
+                viewWidth - leftAndRight / contentScale,
+                viewHeight - topAndBottom / contentScale);
 
-        control.getContentScaleTransform().setX(scale);
-        control.getContentScaleTransform().setY(scale);
+        control.getContentScaleTransform().setX(contentScale);
+        control.getContentScaleTransform().setY(contentScale);
 
         control.getView().relocate(
                 getInsets().getLeft() * 2,
@@ -507,7 +517,10 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     protected double computeMinHeight(double d) {
 
         double result = root.minHeight(d);
-        result = Math.max(result, titleBar.prefHeight(d));
+        result = Math.max(result,
+                titleBar.prefHeight(d)
+                + control.getView().minHeight(d) * contentScale
+                + getInsets().getBottom());
 
         return result;
     }

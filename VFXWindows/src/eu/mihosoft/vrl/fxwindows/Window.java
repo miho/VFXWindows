@@ -4,6 +4,8 @@
  */
 package eu.mihosoft.vrl.fxwindows;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.Control;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -16,22 +18,19 @@ import javafx.scene.transform.Scale;
 public class Window extends Control {
 
     public static final String DEFAULT_STYLE_CLASS = "window";
-    public static final String DEFAULT_STYLE = "/eu/mihosoft/vrl/fxwindows/default.css";
-
+    public static final String DEFAULT_STYLE =
+            "/eu/mihosoft/vrl/fxwindows/default.css";
     private StackPane view = new StackPane();
     private boolean moveToFront = true;
     private Scale contentScaleTransform;
-    private boolean zoomable = true;
-    private double minScale = 0.1;
-    private double maxScale = 10;
-    private double scaleIncrement = 0.001;
-
+    private StringProperty title = new SimpleStringProperty("Title");
 
     public Window() {
         init();
     }
 
     public Window(String title) {
+        setTitle(title);
         init();
     }
 
@@ -50,20 +49,6 @@ public class Window extends Control {
     @Override
     protected String getUserAgentStylesheet() {
         return DEFAULT_STYLE;
-    }
-
-    /**
-     * @return the zoomable
-     */
-    public boolean isZoomable() {
-        return zoomable;
-    }
-
-    /**
-     * @param zoomable the zoomable to set
-     */
-    public void setZoomable(boolean zoomable) {
-        this.zoomable = zoomable;
     }
 
     /**
@@ -118,7 +103,6 @@ public class Window extends Control {
 //    public void setMaxScale(double maxScale) {
 //        this.maxScale = maxScale;
 //    }
-
 //    /**
 //     * @return the scaleIncrement
 //     */
@@ -146,11 +130,28 @@ public class Window extends Control {
 //    Scale getScaleTransform() {
 //        return scaleTransform;
 //    }
-
     /**
      * @return the contentScaleTransform
      */
-    public Scale getContentScaleTransform() {
+    public final Scale getContentScaleTransform() {
         return contentScaleTransform;
+    }
+
+    /**
+     * @return the title
+     */
+    public final String getTitle() {
+        return title.get();
+    }
+
+    /**
+     * @param title the title to set
+     */
+    public final void setTitle(String title) {
+        this.title.set(title);
+    }
+
+    public final StringProperty titleProperty() {
+        return title;
     }
 }
