@@ -14,6 +14,13 @@ import javafx.scene.layout.Region;
  */
 public class RootPane extends Pane {
 
+    public RootPane() {
+        setPrefWidth(USE_COMPUTED_SIZE);
+        setPrefHeight(USE_COMPUTED_SIZE);
+    }
+    
+    
+
     @Override
     protected void layoutChildren() {
         
@@ -47,8 +54,8 @@ public class RootPane extends Pane {
         double maxX = Double.MIN_VALUE;
 
         for (Node n : getManagedChildren()) {
-            minX = Math.min(minX, n.getLayoutX());
-            maxX = Math.max(maxX, n.getLayoutX()+n.getBoundsInLocal().getMaxX());
+            minX = Math.min(minX, n.getBoundsInLocal().getMinX());
+            maxX = Math.max(maxX, n.getBoundsInLocal().getMaxX());
         }
 
         return maxX;
@@ -62,20 +69,20 @@ public class RootPane extends Pane {
         double maxY = Double.MIN_VALUE;
 
         for (Node n : getManagedChildren()) {
-            minY = Math.min(minY, n.getLayoutY());
-            maxY = Math.max(maxY, n.getLayoutY()+n.getBoundsInLocal().getMaxY());
+            minY = Math.min(minY, n.getBoundsInLocal().getMinY());
+            maxY = Math.max(maxY, n.getBoundsInLocal().getMaxY());
         }
 
         return maxY;
     }
     
-//    @Override
-//    protected double computePrefWidth(double h) {
-//        return computeMinWidth(h);
-//    }
-//    
-//    @Override
-//    protected double computePrefHeight(double w) {
-//        return computeMinHeight(w);
-//    }
+    @Override
+    protected double computePrefWidth(double h) {
+        return computeMinWidth(h);
+    }
+    
+    @Override
+    protected double computePrefHeight(double w) {
+        return computeMinHeight(w);
+    }
 }

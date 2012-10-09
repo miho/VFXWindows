@@ -184,8 +184,6 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                     n.setLayoutX(nX);
                     n.setLayoutY(nY);
-                    
-                    n.getParent().requestLayout();
 
                     dragging = true;
 
@@ -471,30 +469,39 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
         titleBar.resize(newTitleBarWidth, titleBar.prefHeight(0));
 
-        double viewWidth = Math.max(control.getContentPane().prefWidth(0),
-                root.getWidth());
-
-        double viewHeight = Math.max(control.getContentPane().prefHeight(0),
-                root.getHeight() - titleBar.getHeight());
-
+//        double viewWidth = Math.max(control.getContentPane().prefWidth(0),
+//                root.getWidth());
+//
+//        double viewHeight = Math.max(control.getContentPane().prefHeight(0),
+//                root.getHeight() - titleBar.getHeight());
+//
         double leftAndRight = getInsets().getLeft() + getInsets().getRight();
         double topAndBottom = getInsets().getTop() + getInsets().getBottom();
-
-        double scaleWidth = (root.getWidth() - leftAndRight) / viewWidth;
-        double scaleHeight = (root.getHeight() - topAndBottom) / viewHeight;
-
-        contentScale = Math.min(scaleWidth, scaleHeight);
+//
+//        double scaleWidth = (root.getWidth() - leftAndRight) / viewWidth;
+//        double scaleHeight = (root.getHeight() - topAndBottom) / viewHeight;
+//
+//        contentScale = Math.min(scaleWidth, scaleHeight);
+//
+//        control.getContentPane().resize(
+//                viewWidth - leftAndRight / contentScale,
+//                viewHeight - topAndBottom / contentScale);
+//
+//        control.getContentScaleTransform().setX(contentScale);
+//        control.getContentScaleTransform().setY(contentScale);
+//
+//        control.getContentPane().relocate(
+//                getInsets().getLeft() * 2,
+//                titleBar.prefHeight(0) + getInsets().getTop());
+        
+        
+        control.getContentPane().relocate(
+                getInsets().getLeft(),
+                titleBar.prefHeight(0));
 
         control.getContentPane().resize(
-                viewWidth - leftAndRight / contentScale,
-                viewHeight - topAndBottom / contentScale);
-
-        control.getContentScaleTransform().setX(contentScale);
-        control.getContentScaleTransform().setY(contentScale);
-
-        control.getContentPane().relocate(
-                getInsets().getLeft() * 2,
-                titleBar.prefHeight(0) + getInsets().getTop());
+                root.getWidth() - leftAndRight,
+                root.getHeight()- getInsets().getBottom()- titleBar.prefHeight(0));
     }
 
     /**
@@ -528,7 +535,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         double result = root.minHeight(d);
         result = Math.max(result,
                 titleBar.prefHeight(d)
-                + control.getContentPane().minHeight(d) * contentScale
+                //                + control.getContentPane().minHeight(d)
                 + getInsets().getBottom());
 
         return result;

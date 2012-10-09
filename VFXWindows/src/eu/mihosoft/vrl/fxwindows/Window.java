@@ -24,7 +24,6 @@ public class Window extends Control {
     public static final String DEFAULT_STYLE =
             "/eu/mihosoft/vrl/fxwindows/default.css";
     private boolean moveToFront = true;
-    private Scale contentScaleTransform;
     private StringProperty titleProperty = new SimpleStringProperty("Title");
     private Property<Pane> contentPaneProperty =
             new SimpleObjectProperty<Pane>();
@@ -58,12 +57,6 @@ public class Window extends Control {
 
     public void setContentPane(Pane contentPane) {
         contentPaneProperty.setValue(contentPane);
-        contentScaleTransform = new Scale(1, 1);
-        getContentScaleTransform().setPivotX(0);
-        getContentScaleTransform().setPivotY(0);
-        getContentScaleTransform().setPivotZ(0);
-
-        getContentPane().getTransforms().add(getContentScaleTransform());
     }
 
     public Property<Pane> contentPaneProperty() {
@@ -84,12 +77,6 @@ public class Window extends Control {
         return moveToFront;
     }
     
-    /**
-     * @return the contentScaleTransform
-     */
-    public final Scale getContentScaleTransform() {
-        return contentScaleTransform;
-    }
 
     /**
      * @return the title

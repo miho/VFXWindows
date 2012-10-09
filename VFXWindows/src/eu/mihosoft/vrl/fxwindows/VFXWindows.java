@@ -4,14 +4,25 @@
  */
 package eu.mihosoft.vrl.fxwindows;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.ScaleTransition;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
+import javafx.util.Duration;
 
 /**
  * Draggable node sample.
@@ -36,8 +47,9 @@ public class VFXWindows extends Application {
 
         // we use a default pane without layout such as HBox, VBox etc.
         final Pane root = new Pane();
-
         final Scene scene = new Scene(root, 800, 700, Color.rgb(160, 160, 160));
+
+//        addAnimatedScaledPane(root);
 
         for (int j = 0; j < 4; j++) {
 
@@ -46,31 +58,36 @@ public class VFXWindows extends Application {
 
             // add numNodes instances of DraggableNode to the root pane
             for (int i = 0; i < numNodes; i++) {
-                Window node = new Window("W (" + (i+1) + "," + (j+1) + ")");
-                
-                Button btn = new Button("TestBtn TestBtn TestBtn");
-                
-                btn.setMinWidth(400);
-                
-//                StackPane.setAlignment(btn, Pos.CENTER);
-                
-                node.setContentPane(new RootPane());
-                
-                Window innerWindow =  new Window("---------- Subwindow 1 ----------");
-                Window innerInnerWindow = new Window("---------- Subwindow 2 ----------");
-                
-                innerWindow.getContentPane().getChildren().add(innerInnerWindow);
+                Window node = new Window("W (" + (i + 1) + "," + (j + 1) + ")");
 
-                node.getContentPane().getChildren().add(innerWindow);
+                Button btn = new Button("TestBtn TestBtn TestBtn");
+                btn.setMinWidth(400);
+                final ScaledContentPane scaledContent = new ScaledContentPane();
+                scaledContent.setStyle("-fx-border-color: rgb(255,255,255);\n"
+                        + "-fx-background-color: rgba(0,0,0,0.4);"
+                        + "-fx-padding: 10;"
+                        + "-fx-border-radius: 3;"
+                        + "-fx-background-radius: 3;");
+//                        + "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 0.0, 0.0);");
+
+                scaledContent.setPrefSize(100, 100);
+                scaledContent.getContentPane().getChildren().add(btn);
+
+                ZoomableContentPane zoomContent = new ZoomableContentPane();
+                zoomContent.getChildren().add(scaledContent);
                 
-                innerInnerWindow.setLayoutX(600);
-                innerInnerWindow.setLayoutY(600);
+                zoomContent.setZoomedWidth(500);
+                zoomContent.setZoomedHeight(500);
                 
-                innerWindow.setLayoutX(600);
-                innerWindow.setLayoutY(600);
+                System.out.println("h: " + zoomContent.getZoomedHeight());
                 
-//                WindowUtil.makeDraggable(node);
-//                WindowUtil.makeResizable(node);
+
+                node.setContentPane(zoomContent);
+
+                Window innerWindow = new Window("---------- Subwindow 1 ----------");
+                innerWindow.setLayoutX(100);
+                innerWindow.setLayoutY(100);
+
                 node.setPrefSize(240, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 // define the style via css
@@ -99,5 +116,37 @@ public class VFXWindows extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void addAnimatedScaledPane(Pane root) {
+        Button btn = new Button("TestBtn TestBtn TestBtn");
+        btn.setMinWidth(400);
+        final ScaledContentPane scaledContent = new ScaledContentPane();
+        scaledContent.setStyle("-fx-border-color: rgb(255,0,0);\n"
+                + "-fx-border-width: 10;\n");
+        scaledContent.getContentPane().setStyle("-fx-border-color: rgb(0,255,0);\n"
+                + "-fx-border-width: 10;");
+        scaledContent.setPrefSize(100, 100);
+        scaledContent.getContentPane().getChildren().add(btn);
+
+        root.getChildren().add(scaledContent);
+
+        btn.onActionProperty().set(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                Timeline timeLine = new Timeline(
+                        new KeyFrame(Duration.ZERO,
+                        new KeyValue(scaledContent.prefWidthProperty(), scaledContent.getPrefWidth()),
+                        new KeyValue(scaledContent.prefHeightProperty(), scaledContent.getPrefHeight())),
+                        new KeyFrame(Duration.seconds(10),
+                        new KeyValue(scaledContent.prefWidthProperty(), 600),
+                        new KeyValue(scaledContent.prefHeightProperty(), 600)),
+                        new KeyFrame(Duration.seconds(20),
+                        new KeyValue(scaledContent.prefWidthProperty(), 100),
+                        new KeyValue(scaledContent.prefHeightProperty(), 100)));
+
+                timeLine.play();
+            }
+        });
     }
 }
