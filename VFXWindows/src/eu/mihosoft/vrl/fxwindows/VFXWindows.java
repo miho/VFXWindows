@@ -49,9 +49,9 @@ public class VFXWindows extends Application {
         final Pane root = new Pane();
         final Scene scene = new Scene(root, 800, 700, Color.rgb(160, 160, 160));
 
-        addAnimatedScaledPane(root);
+//        addAnimatedScaledPane(root);
 
-        if (true)
+//        if (false)
         for (int j = 0; j < 4; j++) {
 
             final int numNodes = 4; // number of nodes to add
@@ -60,39 +60,8 @@ public class VFXWindows extends Application {
             // add numNodes instances of DraggableNode to the root pane
             for (int i = 0; i < numNodes; i++) {
                 Window node = new Window("W (" + (i + 1) + "," + (j + 1) + ")");
+                initWindow(node, 0, 3);
 
-                Button btn = new Button("TestBtn TestBtn TestBtn");
-                btn.setMinWidth(400);
-                final ScaledContentPane scaledContent = new ScaledContentPane();
-                scaledContent.setStyle("-fx-border-color: rgb(255,255,255);\n"
-                        + "-fx-background-color: rgba(0,0,0,0.4);"
-                        + "-fx-padding: 10;"
-                        + "-fx-border-radius: 3;"
-                        + "-fx-background-radius: 3;");
-//                        + "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 0.0, 0.0);");
-
-                scaledContent.setPrefSize(100, 100);
-                scaledContent.getContentPane().getChildren().add(btn);
-
-                ZoomableContentPane zoomContent = new ZoomableContentPane();
-                zoomContent.getChildren().add(scaledContent);
-                
-                zoomContent.setZoomedWidth(500);
-                zoomContent.setZoomedHeight(500);
-                
-                System.out.println("h: " + zoomContent.getZoomedHeight());
-                
-
-                node.setContentPane(zoomContent);
-
-                Window innerWindow = new Window("---------- Subwindow 1 ----------");
-                innerWindow.setPrefHeight(80);
-                
-                scaledContent.getContentPane().getChildren().add(innerWindow);
-                
-                innerWindow.setLayoutX(100);
-                innerWindow.setLayoutY(100);
-                
 
                 node.setPrefSize(240, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -134,7 +103,7 @@ public class VFXWindows extends Application {
                 + "-fx-border-width: 10;");
         scaledContent.setPrefSize(400, 400);
         scaledContent.getContentPane().getChildren().add(btn);
-        
+
         Window w = new Window("Window");
         scaledContent.getContentPane().getChildren().add(w);
 
@@ -157,5 +126,48 @@ public class VFXWindows extends Application {
                 timeLine.play();
             }
         });
+    }
+
+    private void initWindow(Window node, int c, int max) {
+
+        if (c >= max) {
+            return;
+        }
+
+
+        Button btn = new Button("TestBtn TestBtn TestBtn");
+        btn.setMinWidth(400);
+        final ScaledContentPane scaledContent = new ScaledContentPane();
+        scaledContent.setStyle("-fx-border-color: rgb(255,255,255);\n"
+                + "-fx-background-color: rgba(0,0,0,0.4);"
+                + "-fx-padding: 10;"
+                + "-fx-border-radius: 3;"
+                + "-fx-background-radius: 3;");
+//                        + "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 0.0, 0.0);");
+
+        scaledContent.setPrefSize(100, 100);
+        scaledContent.getContentPane().getChildren().add(btn);
+
+        ZoomableContentPane zoomContent = new ZoomableContentPane();
+        zoomContent.getChildren().add(scaledContent);
+
+        zoomContent.setZoomedWidth(500);
+        zoomContent.setZoomedHeight(500);
+
+        node.setContentPane(zoomContent);
+
+        Window inner = new Window("L" + c);
+
+        inner.setLayoutX(30);
+        inner.setLayoutY(30);
+        
+        inner.setPrefWidth(300);
+        inner.setPrefHeight(100);
+
+        initWindow(inner, ++c, max);
+
+        scaledContent.getContentPane().getChildren().add(inner);
+
+
     }
 }

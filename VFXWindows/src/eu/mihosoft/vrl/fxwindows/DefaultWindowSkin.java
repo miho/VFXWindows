@@ -185,7 +185,10 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double insetOffset = getInsets().getTop() / 2;
 
-                        double yDiff = sceneY / parentScaleY + insetOffset - event.getSceneY() / parentScaleY;
+                        double yDiff = 
+                                sceneY / parentScaleY 
+                                + insetOffset 
+                                - event.getSceneY() / parentScaleY;
 
                         double newHeight = control.getPrefHeight() + yDiff;
 
@@ -200,7 +203,9 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double insetOffset = getInsets().getLeft() / 2;
 
-                        double xDiff = sceneX / parentScaleX + insetOffset - event.getSceneX() / parentScaleX;
+                        double xDiff = sceneX / parentScaleX 
+                                + insetOffset 
+                                - event.getSceneX() / parentScaleX;
 
                         double newWidth = control.getPrefWidth() + xDiff;
 
@@ -215,7 +220,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double insetOffset = getInsets().getBottom() / 2;
 
-                        double yDiff = event.getSceneY() / parentScaleY - sceneY / parentScaleY - insetOffset;
+                        double yDiff = event.getSceneY() / parentScaleY
+                                - sceneY / parentScaleY - insetOffset;
 
                         double newHeight = yDiff;
 
@@ -227,7 +233,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double insetOffset = getInsets().getRight() / 2;
 
-                        double xDiff = event.getSceneX() / parentScaleX - sceneX / parentScaleY - insetOffset;
+                        double xDiff = event.getSceneX() / parentScaleX
+                                - sceneX / parentScaleY - insetOffset;
 
                         double newWidth = xDiff;
 
