@@ -25,7 +25,7 @@ public class RootPane extends Pane {
     @Override
     protected void layoutChildren() {
 
-        System.out.println("root: layout " + System.currentTimeMillis());
+//        System.out.println("root: layout " + System.currentTimeMillis());
 
         getParent().requestLayout();
 

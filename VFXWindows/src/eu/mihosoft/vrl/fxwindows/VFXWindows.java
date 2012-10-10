@@ -58,7 +58,7 @@ public class VFXWindows extends Application {
             // add numNodes instances of DraggableNode to the root pane
             for (int i = 0; i < numNodes; i++) {
                 Window node = createWindowHierarchy(
-                        new Window("W (" + (i + 1) + "," + (j + 1) + ")"), 6);
+                        new Window("W (" + (i + 1) + "," + (j + 1) + ")"), 8);
 
                 node.setPrefSize(220, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -148,11 +148,15 @@ public class VFXWindows extends Application {
 
         ZoomableContentPane zoomContent = new ZoomableContentPane();
         zoomContent.getChildren().add(scaledContent);
+        
+        OptimizableContentPane optContent = new OptimizableContentPane();
+        
+        optContent.getChildren().add(zoomContent);
 
         zoomContent.setZoomedWidth(500);
         zoomContent.setZoomedHeight(500);
 
-        node.setContentPane(zoomContent);
+        node.setContentPane(optContent);
 
         if (c >= max) {
             return node;

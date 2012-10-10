@@ -69,7 +69,7 @@ public class ScaledContentPane extends Pane {
     @Override
     protected void layoutChildren() {
 
-        System.out.println("scaled-content: layout " + System.currentTimeMillis());
+//        System.out.println("scaled-content: layout " + System.currentTimeMillis());
 
         super.layoutChildren();
 

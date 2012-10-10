@@ -330,8 +330,6 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                     resizeMode = ResizeMode.NONE;
                 }
 
-                System.out.println("MODE: " + resizeMode);
-
                 control.autosize();
             }
         });
@@ -427,7 +425,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     @Override
     protected void layoutChildren() {
 
-        System.out.println("skin: layout " + System.currentTimeMillis());
+//        System.out.println("skin: layout " + System.currentTimeMillis());
 
         super.layoutChildren();
 
