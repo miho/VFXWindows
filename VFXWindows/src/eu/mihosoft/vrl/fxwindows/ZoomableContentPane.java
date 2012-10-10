@@ -20,10 +20,8 @@ import javafx.util.Duration;
 public class ZoomableContentPane extends StackPane {
 
     private boolean zoomed;
-    
 //    private double zoomedWidth = 500;
 //    private double zoomedHeight = 500;
-    
     private DoubleProperty zoomedWidthProperty = new SimpleDoubleProperty();
     private DoubleProperty zoomedHeightProperty = new SimpleDoubleProperty();
 
@@ -38,22 +36,30 @@ public class ZoomableContentPane extends StackPane {
                 ScaleTransition st =
                         new ScaleTransition(
                         Duration.seconds(0.2), scaledContent);
-                
+
+                final double parentScaleX = getParent().
+                        localToSceneTransformProperty().getValue().getMxx();
+                final double parentScaleY = getParent().
+                        localToSceneTransformProperty().getValue().getMyy();
+
                 double targetZoom = 1.0;
                 if (zoomed) {
-                    
                     //
                 } else {
-                    double targetZoomX = getZoomedWidth() / getBoundsInLocal().getWidth();
-                    double targetZoomY = getZoomedHeight()/getBoundsInLocal().getHeight();
-                    
+                    double targetZoomX =
+                            getZoomedWidth()
+                            / (getBoundsInLocal().getWidth() * parentScaleX);
+                    double targetZoomY =
+                            getZoomedHeight()
+                            / (getBoundsInLocal().getHeight() * parentScaleY);
+
                     targetZoom = Math.min(targetZoomX, targetZoomY);
                 }
-                
+
                 st.setFromX(scaledContent.getScaleX());
-                    st.setFromY(scaledContent.getScaleY());
-                    st.setToX(targetZoom);
-                    st.setToY(targetZoom);
+                st.setFromY(scaledContent.getScaleY());
+                st.setToX(targetZoom);
+                st.setToY(targetZoom);
 
                 zoomed = !zoomed;
 
@@ -89,11 +95,11 @@ public class ZoomableContentPane extends StackPane {
     public void setZoomedHeight(double zoomedHeight) {
         this.zoomedHeightProperty.set(zoomedHeight);
     }
-    
+
     public DoubleProperty zoomedWidthProperty() {
         return zoomedWidthProperty;
     }
-    
+
     public DoubleProperty zoomedHeightProperty() {
         return zoomedHeightProperty;
     }

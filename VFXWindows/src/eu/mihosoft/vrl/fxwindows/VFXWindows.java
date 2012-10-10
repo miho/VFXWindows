@@ -130,13 +130,12 @@ public class VFXWindows extends Application {
 
     private void initWindow(Window node, int c, int max) {
 
-        if (c >= max) {
-            return;
-        }
 
 
-        Button btn = new Button("TestBtn TestBtn TestBtn");
-        btn.setMinWidth(400);
+
+
+
+
         final ScaledContentPane scaledContent = new ScaledContentPane();
         scaledContent.setStyle("-fx-border-color: rgb(255,255,255);\n"
                 + "-fx-background-color: rgba(0,0,0,0.4);"
@@ -146,7 +145,12 @@ public class VFXWindows extends Application {
 //                        + "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 0.0, 0.0);");
 
         scaledContent.setPrefSize(100, 100);
-        scaledContent.getContentPane().getChildren().add(btn);
+
+        if (c == max) {
+            Button btn = new Button("Test Button");
+            btn.setMinWidth(400);
+            scaledContent.getContentPane().getChildren().add(btn);
+        }
 
         ZoomableContentPane zoomContent = new ZoomableContentPane();
         zoomContent.getChildren().add(scaledContent);
@@ -156,18 +160,35 @@ public class VFXWindows extends Application {
 
         node.setContentPane(zoomContent);
 
-        Window inner = new Window("L" + c);
+        if (c >= max) {
+            return;
+        }
 
-        inner.setLayoutX(30);
-        inner.setLayoutY(30);
+        c++;
         
-        inner.setPrefWidth(300);
-        inner.setPrefHeight(100);
+        Window inner1 = new Window("L" + c);
 
-        initWindow(inner, ++c, max);
+        inner1.setLayoutX(30);
+        inner1.setLayoutY(10);
 
-        scaledContent.getContentPane().getChildren().add(inner);
+        inner1.setPrefWidth(160 + (max -c) * 100);
+        inner1.setPrefHeight(160);
+
+        initWindow(inner1, c, max);
+
+        scaledContent.getContentPane().getChildren().add(inner1);
 
 
+        Window inner2 = new Window("L" + c);
+
+        inner2.setLayoutX(30 + inner1.getPrefWidth() +10);
+        inner2.setLayoutY(10);
+
+        inner2.setPrefWidth(160 + (max -c) * 100);
+        inner2.setPrefHeight(160);
+
+        initWindow(inner2, c, max);
+
+        scaledContent.getContentPane().getChildren().add(inner2);
     }
 }

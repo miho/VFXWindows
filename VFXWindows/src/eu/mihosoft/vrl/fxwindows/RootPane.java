@@ -17,17 +17,18 @@ public class RootPane extends Pane {
     public RootPane() {
         setPrefWidth(USE_COMPUTED_SIZE);
         setPrefHeight(USE_COMPUTED_SIZE);
+        
+        setMinWidth(USE_COMPUTED_SIZE);
+        setMinHeight(USE_COMPUTED_SIZE);
     }
-    
-    
 
     @Override
     protected void layoutChildren() {
-        
+
         System.out.println("root: layout " + System.currentTimeMillis());
-        
+
         getParent().requestLayout();
-        
+
         super.layoutChildren();
         for (Node n : getManagedChildren()) {
             if (n instanceof Region) {
@@ -37,10 +38,10 @@ public class RootPane extends Pane {
                 double height = Math.max(p.getMinHeight(), p.getPrefHeight());
 
                 n.resize(width, height);
-                
+
                 double nX = Math.min(0, n.getLayoutX());
                 double nY = Math.min(0, n.getLayoutY());
-                
+
                 n.relocate(nX, nY);
             }
         }
@@ -54,13 +55,13 @@ public class RootPane extends Pane {
         double maxX = Double.MIN_VALUE;
 
         for (Node n : getManagedChildren()) {
-            minX = Math.min(minX, n.getBoundsInLocal().getMinX());
-            maxX = Math.max(maxX, n.getBoundsInLocal().getMaxX());
+            minX = Math.min(minX, n.getBoundsInParent().getMinX());
+            maxX = Math.max(maxX, n.getBoundsInParent().getMaxX());
         }
-
+        
         return maxX;
     }
-    
+
     @Override
     protected double computeMinHeight(double w) {
 //        double h = getInsets().getLeft() + getInsets().getRight();
@@ -69,18 +70,18 @@ public class RootPane extends Pane {
         double maxY = Double.MIN_VALUE;
 
         for (Node n : getManagedChildren()) {
-            minY = Math.min(minY, n.getBoundsInLocal().getMinY());
-            maxY = Math.max(maxY, n.getBoundsInLocal().getMaxY());
+            minY = Math.min(minY, n.getBoundsInParent().getMinY());
+            maxY = Math.max(maxY, n.getBoundsInParent().getMaxY());
         }
 
         return maxY;
     }
-    
+
     @Override
     protected double computePrefWidth(double h) {
         return computeMinWidth(h);
     }
-    
+
     @Override
     protected double computePrefHeight(double w) {
         return computeMinHeight(w);
