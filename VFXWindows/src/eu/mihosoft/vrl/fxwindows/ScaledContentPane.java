@@ -99,10 +99,10 @@ public class ScaledContentPane extends Pane {
             contentScaleWidth = scale;
             contentScaleHeight = scale;
         }
-
-        System.out.println("rw: " + realWidth);
-        System.out.println("scale: " + contentScaleWidth);
-        System.out.println("cw: " + getBoundsInLocal().getWidth());
+//
+//        System.out.println("rw: " + realWidth);
+//        System.out.println("scale: " + contentScaleWidth);
+//        System.out.println("cw: " + getBoundsInLocal().getWidth());
 
         getContentScaleTransform().setX(contentScaleWidth);
         getContentScaleTransform().setY(contentScaleHeight);
@@ -158,7 +158,7 @@ public class ScaledContentPane extends Pane {
         final ChangeListener<Bounds> boundsListener = new ChangeListener<Bounds>() {
             @Override
             public void changed(ObservableValue<? extends Bounds> ov, Bounds t, Bounds t1) {
-                System.out.println("b.w: " + t1.getWidth() + ", b.h: " + t1.getHeight());
+//                System.out.println("b.w: " + t1.getWidth() + ", b.h: " + t1.getHeight());
                 layout();
             }
         };
@@ -170,36 +170,36 @@ public class ScaledContentPane extends Pane {
             }
         };
 
-        getContentPane().getChildren().addListener(new ListChangeListener<Node>() {
-            @Override
-            public void onChanged(Change<? extends Node> c) {
-
-
-                while (c.next()) {
-                    if (c.wasPermutated()) {
-                        for (int i = c.getFrom(); i < c.getTo(); ++i) {
-                            //permutate
-                        }
-                    } else if (c.wasUpdated()) {
-                        //update item
-                    } else {
-                        if (c.wasRemoved()) {
-                            for (Node n : c.getRemoved()) {
-                                n.boundsInLocalProperty().removeListener(boundsListener);
-                                n.layoutXProperty().removeListener(numberListener);
-                                n.layoutYProperty().removeListener(numberListener);
-                            }
-                        } else if (c.wasAdded()) {
-                            for (Node n : c.getAddedSubList()) {
-                                n.boundsInLocalProperty().addListener(boundsListener);
-                                n.layoutXProperty().addListener(numberListener);
-                                n.layoutYProperty().addListener(numberListener);
-                            }
-                        }
-                    }
-                }
-            }
-        });
+//        getContentPane().getChildren().addListener(new ListChangeListener<Node>() {
+//            @Override
+//            public void onChanged(Change<? extends Node> c) {
+//
+//
+//                while (c.next()) {
+//                    if (c.wasPermutated()) {
+//                        for (int i = c.getFrom(); i < c.getTo(); ++i) {
+//                            //permutate
+//                        }
+//                    } else if (c.wasUpdated()) {
+//                        //update item
+//                    } else {
+//                        if (c.wasRemoved()) {
+//                            for (Node n : c.getRemoved()) {
+//                                n.boundsInLocalProperty().removeListener(boundsListener);
+//                                n.layoutXProperty().removeListener(numberListener);
+//                                n.layoutYProperty().removeListener(numberListener);
+//                            }
+//                        } else if (c.wasAdded()) {
+//                            for (Node n : c.getAddedSubList()) {
+//                                n.boundsInLocalProperty().addListener(boundsListener);
+//                                n.layoutXProperty().addListener(numberListener);
+//                                n.layoutYProperty().addListener(numberListener);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        });
     }
 
     /**

@@ -166,7 +166,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double insetOffset = getInsets().getTop() / 2;
                         
-                        double yDiff = sceneY + insetOffset - event.getSceneY() / parentScaleY;
+                        double yDiff = sceneY/ parentScaleY + insetOffset - event.getSceneY() / parentScaleY;
 
                         double newHeight = control.getPrefHeight() + yDiff;
                         
@@ -181,7 +181,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                         
                         double insetOffset = getInsets().getLeft()/2;
 
-                        double xDiff = sceneX + insetOffset - event.getSceneX() / parentScaleX;
+                        double xDiff = sceneX/ parentScaleX + insetOffset - event.getSceneX() / parentScaleX;
 
                         double newWidth = control.getPrefWidth() + xDiff;
 
@@ -196,7 +196,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                         
                         double insetOffset = getInsets().getBottom()/2;
 
-                        double yDiff = event.getSceneY() / parentScaleY - sceneY - insetOffset;
+                        double yDiff = event.getSceneY() / parentScaleY - sceneY / parentScaleY - insetOffset;
 
                         double newHeight = yDiff;
 
@@ -208,7 +208,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                         
                         double insetOffset = getInsets().getRight()/2;
 
-                        double xDiff = event.getSceneX() / parentScaleX - sceneX - insetOffset;
+                        double xDiff = event.getSceneX() / parentScaleX - sceneX / parentScaleY- insetOffset;
 
                         double newWidth = xDiff;
 
@@ -242,17 +242,17 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 final double scaleX = n.localToSceneTransformProperty().getValue().getMxx();
                 final double scaleY = n.localToSceneTransformProperty().getValue().getMyy();
 
-                final double border = 10;
+                final double border = 10 * scaleX;
 
                 double diffMinX = Math.abs(n.getBoundsInLocal().getMinX() - t.getX() + getInsets().getLeft());
                 double diffMinY = Math.abs(n.getBoundsInLocal().getMinY() - t.getY() + getInsets().getTop());
                 double diffMaxX = Math.abs(n.getBoundsInLocal().getMaxX() - t.getX() - getInsets().getRight());
                 double diffMaxY = Math.abs(n.getBoundsInLocal().getMaxY() - t.getY() - getInsets().getBottom());
 
-                boolean left = diffMinX * scaleX < Math.max(border, getInsets().getLeft() / 2);
-                boolean top = diffMinY * scaleY < Math.max(border, getInsets().getTop() / 2);
-                boolean right = diffMaxX * scaleX < Math.max(border, getInsets().getRight() / 2);
-                boolean bottom = diffMaxY * scaleY < Math.max(border, getInsets().getBottom() / 2);
+                boolean left = diffMinX * scaleX < Math.max(border, getInsets().getLeft() / 2 * scaleX);
+                boolean top = diffMinY * scaleY < Math.max(border, getInsets().getTop() / 2 * scaleY);
+                boolean right = diffMaxX * scaleX < Math.max(border, getInsets().getRight() / 2 * scaleX);
+                boolean bottom = diffMaxY * scaleY < Math.max(border, getInsets().getBottom() / 2 * scaleY);
 
                 RESIZE_TOP = false;
                 RESIZE_LEFT = false;
