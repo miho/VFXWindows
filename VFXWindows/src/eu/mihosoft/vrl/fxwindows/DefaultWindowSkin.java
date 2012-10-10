@@ -30,8 +30,10 @@ import javafx.scene.text.TextAlignment;
  */
 public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
-    private double initialMousePosX;
-    private double initialMousePosY;
+    private double mouseX;
+    private double mouseY;
+    private double nodeX = 0;
+    private double nodeY = 0;
     private boolean dragging = false;
     private boolean zoomable = true;
     private double minScale = 0.1;
@@ -114,9 +116,17 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
             public void handle(MouseEvent event) {
 
                 final Node n = control;
-                
-                initialMousePosX = event.getX();
-                initialMousePosY = event.getY();
+
+                final double parentScaleX = n.getParent().
+                        localToSceneTransformProperty().getValue().getMxx();
+                final double parentScaleY = n.getParent().
+                        localToSceneTransformProperty().getValue().getMyy();
+
+                mouseX = event.getSceneX();
+                mouseY = event.getSceneY();
+
+                nodeX = n.getLayoutX() * parentScaleX;
+                nodeY = n.getLayoutY() * parentScaleY;
 
                 if (control.isMoveToFront()) {
                     control.toFront();
@@ -147,10 +157,19 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 double sceneX = boundsInScene.getMinX();
                 double sceneY = boundsInScene.getMinY();
 
+                double offsetX = event.getSceneX() - mouseX;
+                double offsetY = event.getSceneY() - mouseY;
+
                 if (resizeMode == ResizeMode.NONE) {
 
-                    control.setLayoutX(event.getSceneX()/parentScaleX - initialMousePosX);
-                    control.setLayoutY(event.getSceneY()/parentScaleY - initialMousePosY);
+                    nodeX += offsetX;
+                    nodeY += offsetY;
+
+                    double scaledX = nodeX * 1 / parentScaleX;
+                    double scaledY = nodeY * 1 / parentScaleY;
+
+                    n.setLayoutX(scaledX);
+                    n.setLayoutY(scaledY);
 
                     dragging = true;
 
@@ -165,11 +184,11 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 //                        System.out.println("TOP");
 
                         double insetOffset = getInsets().getTop() / 2;
-                        
-                        double yDiff = sceneY/ parentScaleY + insetOffset - event.getSceneY() / parentScaleY;
+
+                        double yDiff = sceneY / parentScaleY + insetOffset - event.getSceneY() / parentScaleY;
 
                         double newHeight = control.getPrefHeight() + yDiff;
-                        
+
 
                         if (newHeight > control.minHeight(0)) {
                             control.setLayoutY(control.getLayoutY() - yDiff);
@@ -178,10 +197,10 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                     }
                     if (RESIZE_LEFT) {
 //                        System.out.println("LEFT");
-                        
-                        double insetOffset = getInsets().getLeft()/2;
 
-                        double xDiff = sceneX/ parentScaleX + insetOffset - event.getSceneX() / parentScaleX;
+                        double insetOffset = getInsets().getLeft() / 2;
+
+                        double xDiff = sceneX / parentScaleX + insetOffset - event.getSceneX() / parentScaleX;
 
                         double newWidth = control.getPrefWidth() + xDiff;
 
@@ -193,8 +212,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                     if (RESIZE_BOTTOM) {
 //                        System.out.println("BOTTOM");
-                        
-                        double insetOffset = getInsets().getBottom()/2;
+
+                        double insetOffset = getInsets().getBottom() / 2;
 
                         double yDiff = event.getSceneY() / parentScaleY - sceneY / parentScaleY - insetOffset;
 
@@ -205,10 +224,10 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                         }
                     }
                     if (RESIZE_RIGHT) {
-                        
-                        double insetOffset = getInsets().getRight()/2;
 
-                        double xDiff = event.getSceneX() / parentScaleX - sceneX / parentScaleY- insetOffset;
+                        double insetOffset = getInsets().getRight() / 2;
+
+                        double xDiff = event.getSceneX() / parentScaleX - sceneX / parentScaleY - insetOffset;
 
                         double newWidth = xDiff;
 
@@ -217,6 +236,10 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                         }
                     }
                 }
+
+                mouseX = event.getSceneX();
+                mouseY = event.getSceneY();
+
 
                 event.consume();
             }

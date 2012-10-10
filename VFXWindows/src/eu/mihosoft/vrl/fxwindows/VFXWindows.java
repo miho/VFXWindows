@@ -51,7 +51,7 @@ public class VFXWindows extends Application {
 
         addAnimatedScaledPane(root);
 
-        if (false)
+        if (true)
         for (int j = 0; j < 4; j++) {
 
             final int numNodes = 4; // number of nodes to add
@@ -86,6 +86,7 @@ public class VFXWindows extends Application {
                 node.setContentPane(zoomContent);
 
                 Window innerWindow = new Window("---------- Subwindow 1 ----------");
+                innerWindow.setPrefHeight(80);
                 
                 scaledContent.getContentPane().getChildren().add(innerWindow);
                 
