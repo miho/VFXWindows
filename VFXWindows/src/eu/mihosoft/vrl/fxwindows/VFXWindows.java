@@ -47,9 +47,7 @@ public class VFXWindows extends Application {
 
         // we use a default pane without layout such as HBox, VBox etc.
         final Pane root = new Pane();
-        final Scene scene = new Scene(root, 800, 700, Color.rgb(160, 160, 160));
-
-//        addAnimatedScaledPane(root);
+        final Scene scene = new Scene(root, 1024, 768, Color.rgb(160, 160, 160));
 
 //        if (false)
         for (int j = 0; j < 4; j++) {
@@ -59,14 +57,12 @@ public class VFXWindows extends Application {
 
             // add numNodes instances of DraggableNode to the root pane
             for (int i = 0; i < numNodes; i++) {
-                Window node = new Window("W (" + (i + 1) + "," + (j + 1) + ")");
-                initWindow(node, 0, 3);
+                Window node = createWindowHierarchy(
+                        new Window("W (" + (i + 1) + "," + (j + 1) + ")"), 6);
 
-
-                node.setPrefSize(240, 120);
+                node.setPrefSize(220, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                // define the style via css
-//                node.setStyle(CSS_STYLE);
+
                 // position the node
                 node.setLayoutX(spacing * (i + 1) + node.getPrefWidth() * i);
                 node.setLayoutY(spacing + (spacing + node.getPrefHeight()) * j);
@@ -76,7 +72,7 @@ public class VFXWindows extends Application {
         }
 
         // finally, show the stage
-        primaryStage.setTitle("Draggable Node 02");
+        primaryStage.setTitle("VFXWindow Demo");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -128,13 +124,11 @@ public class VFXWindows extends Application {
         });
     }
 
-    private void initWindow(Window node, int c, int max) {
+    private Window createWindowHierarchy(Window node, int max) {
+        return _createWindowHierarchy(node, 0, max);
+    }
 
-
-
-
-
-
+    private Window _createWindowHierarchy(Window node, int c, int max) {
 
         final ScaledContentPane scaledContent = new ScaledContentPane();
         scaledContent.setStyle("-fx-border-color: rgb(255,255,255);\n"
@@ -161,34 +155,36 @@ public class VFXWindows extends Application {
         node.setContentPane(zoomContent);
 
         if (c >= max) {
-            return;
+            return node;
         }
 
         c++;
-        
+
         Window inner1 = new Window("L" + c);
 
         inner1.setLayoutX(30);
         inner1.setLayoutY(10);
 
-        inner1.setPrefWidth(160 + (max -c) * 100);
+        inner1.setPrefWidth(160 + (max - c) * 30);
         inner1.setPrefHeight(160);
 
-        initWindow(inner1, c, max);
+        _createWindowHierarchy(inner1, c, max);
 
         scaledContent.getContentPane().getChildren().add(inner1);
 
 
         Window inner2 = new Window("L" + c);
 
-        inner2.setLayoutX(30 + inner1.getPrefWidth() +10);
+        inner2.setLayoutX(30 + inner1.getPrefWidth() + 10);
         inner2.setLayoutY(10);
 
-        inner2.setPrefWidth(160 + (max -c) * 100);
+        inner2.setPrefWidth(160 + (max - c) * 30);
         inner2.setPrefHeight(160);
 
-        initWindow(inner2, c, max);
+        _createWindowHierarchy(inner2, c, max);
 
         scaledContent.getContentPane().getChildren().add(inner2);
+
+        return node;
     }
 }
