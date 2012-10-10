@@ -49,8 +49,9 @@ public class VFXWindows extends Application {
         final Pane root = new Pane();
         final Scene scene = new Scene(root, 800, 700, Color.rgb(160, 160, 160));
 
-//        addAnimatedScaledPane(root);
+        addAnimatedScaledPane(root);
 
+        if (false)
         for (int j = 0; j < 4; j++) {
 
             final int numNodes = 4; // number of nodes to add
@@ -85,13 +86,17 @@ public class VFXWindows extends Application {
                 node.setContentPane(zoomContent);
 
                 Window innerWindow = new Window("---------- Subwindow 1 ----------");
+                
+                scaledContent.getContentPane().getChildren().add(innerWindow);
+                
                 innerWindow.setLayoutX(100);
                 innerWindow.setLayoutY(100);
+                
 
                 node.setPrefSize(240, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 // define the style via css
-                node.setStyle(CSS_STYLE);
+//                node.setStyle(CSS_STYLE);
                 // position the node
                 node.setLayoutX(spacing * (i + 1) + node.getPrefWidth() * i);
                 node.setLayoutY(spacing + (spacing + node.getPrefHeight()) * j);
@@ -120,14 +125,17 @@ public class VFXWindows extends Application {
 
     private void addAnimatedScaledPane(Pane root) {
         Button btn = new Button("TestBtn TestBtn TestBtn");
-        btn.setMinWidth(400);
+        btn.setMinWidth(500);
         final ScaledContentPane scaledContent = new ScaledContentPane();
         scaledContent.setStyle("-fx-border-color: rgb(255,0,0);\n"
                 + "-fx-border-width: 10;\n");
         scaledContent.getContentPane().setStyle("-fx-border-color: rgb(0,255,0);\n"
                 + "-fx-border-width: 10;");
-        scaledContent.setPrefSize(100, 100);
+        scaledContent.setPrefSize(400, 400);
         scaledContent.getContentPane().getChildren().add(btn);
+        
+        Window w = new Window("Window");
+        scaledContent.getContentPane().getChildren().add(w);
 
         root.getChildren().add(scaledContent);
 

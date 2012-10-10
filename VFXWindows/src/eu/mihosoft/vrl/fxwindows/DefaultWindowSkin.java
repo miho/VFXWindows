@@ -6,15 +6,15 @@ package eu.mihosoft.vrl.fxwindows;
 
 import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.skin.SkinBase;
-import java.util.ArrayList;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -30,15 +30,9 @@ import javafx.scene.text.TextAlignment;
  */
 public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
-    // node position
-    private double nodeX = 0;
-    private double nodeY = 0;
-    // mouse position
-    private double mouseX = 0;
-    private double mouseY = 0;
+    private double initialMousePosX;
+    private double initialMousePosY;
     private boolean dragging = false;
-    private boolean moveToFront = true;
-//    private Scale scaleTransform;
     private boolean zoomable = true;
     private double minScale = 0.1;
     private double maxScale = 10;
@@ -115,39 +109,23 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     }
 
     private void initMouseEventHandlers() {
-        onMousePressedProperty().set(new EventHandler<MouseEvent>() {
+        control.onMousePressedProperty().set(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
 
                 final Node n = control;
-
-                final double parentScaleX = n.getParent().
-                        localToSceneTransformProperty().getValue().getMxx();
-                final double parentScaleY = n.getParent().
-                        localToSceneTransformProperty().getValue().getMyy();
-
-                final double scaleX = n.localToSceneTransformProperty().
-                        getValue().getMxx();
-                final double scaleY = n.localToSceneTransformProperty().
-                        getValue().getMyy();
-
-                // record the current mouse X and Y position on Node
-                mouseX = event.getSceneX();
-                mouseY = event.getSceneY();
-
-                nodeX = n.getLayoutX() * parentScaleX;
-                nodeY = n.getLayoutY() * parentScaleY;
+                
+                initialMousePosX = event.getX();
+                initialMousePosY = event.getY();
 
                 if (control.isMoveToFront()) {
                     control.toFront();
                 }
-
-                control.autosize();
             }
         });
 
         //Event Listener for MouseDragged
-        onMouseDraggedProperty().set(new EventHandler<MouseEvent>() {
+        control.onMouseDraggedProperty().set(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
 
@@ -163,27 +141,16 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 final double scaleY = n.localToSceneTransformProperty().
                         getValue().getMyy();
 
-                // Get the exact moved X and Y
+                Bounds boundsInScene =
+                        control.localToScene(control.getBoundsInLocal());
 
-                double offsetX = event.getSceneX() - mouseX;
-                double offsetY = event.getSceneY() - mouseY;
+                double sceneX = boundsInScene.getMinX();
+                double sceneY = boundsInScene.getMinY();
 
                 if (resizeMode == ResizeMode.NONE) {
 
-                    nodeX += offsetX;
-                    nodeY += offsetY;
-
-                    double scaledX = nodeX * 1 / parentScaleX;
-                    double scaledY = nodeY * 1 / parentScaleY;
-
-                    n.setLayoutX(scaledX);
-                    n.setLayoutY(scaledY);
-
-                    double nX = Math.max(0, scaledX);
-                    double nY = Math.max(0, scaledY);
-
-                    n.setLayoutX(nX);
-                    n.setLayoutY(nY);
+                    control.setLayoutX(event.getSceneX()/parentScaleX - initialMousePosX);
+                    control.setLayoutY(event.getSceneY()/parentScaleY - initialMousePosY);
 
                     dragging = true;
 
@@ -197,82 +164,65 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                     if (RESIZE_TOP) {
 //                        System.out.println("TOP");
 
-                        control.layout();
+                        double insetOffset = getInsets().getTop() / 2;
+                        
+                        double yDiff = sceneY + insetOffset - event.getSceneY() / parentScaleY;
 
-                        double newHeight =
-                                getBoundsInLocal().getHeight()
-                                - offsetY / scaleY
-                                - getInsets().getTop();
+                        double newHeight = control.getPrefHeight() + yDiff;
+                        
 
-                        if (newHeight >= control.minHeight(0) && (mouseY <= nodeY || offsetY > 0)) {
-                            nodeY += offsetY;
-                            double scaledY = nodeY / parentScaleY;
-
-                            control.setLayoutY(scaledY);
+                        if (newHeight > control.minHeight(0)) {
+                            control.setLayoutY(control.getLayoutY() - yDiff);
                             control.setPrefHeight(newHeight);
                         }
-
-                        control.autosize();
                     }
                     if (RESIZE_LEFT) {
 //                        System.out.println("LEFT");
+                        
+                        double insetOffset = getInsets().getLeft()/2;
 
-                        control.layout();
+                        double xDiff = sceneX + insetOffset - event.getSceneX() / parentScaleX;
 
-                        double newWidth =
-                                getBoundsInLocal().getWidth()
-                                - offsetX / scaleX
-                                - getInsets().getLeft();
+                        double newWidth = control.getPrefWidth() + xDiff;
 
-                        if (newWidth > control.minWidth(0) && (mouseX <= nodeX || offsetX > 0)) {
-                            nodeX += offsetX;
-                            double scaledX = nodeX / parentScaleX;
-
+                        if (newWidth > control.minWidth(0)) {
+                            control.setLayoutX(control.getLayoutX() - xDiff);
                             control.setPrefWidth(newWidth);
-                            control.setLayoutX(scaledX);
                         }
-
-                        control.autosize();
                     }
 
                     if (RESIZE_BOTTOM) {
 //                        System.out.println("BOTTOM");
-                        control.layout();
-                        double newHeight =
-                                control.getBoundsInLocal().getHeight()
-                                + offsetY / scaleY
-                                - getInsets().getBottom();
+                        
+                        double insetOffset = getInsets().getBottom()/2;
 
-                        if (mouseY >= nodeY + control.getHeight() * scaleY || offsetY < 0) {
+                        double yDiff = event.getSceneY() / parentScaleY - sceneY - insetOffset;
+
+                        double newHeight = yDiff;
+
+                        if (newHeight < control.maxHeight(0)) {
                             control.setPrefHeight(newHeight);
                         }
-
-                        control.autosize();
                     }
                     if (RESIZE_RIGHT) {
-//                        System.out.println("RIGHT");
-                        control.layout();
-                        double newWidth =
-                                control.getBoundsInLocal().getWidth()
-                                + offsetX / scaleX
-                                - getInsets().getRight();
-                        if (mouseX >= nodeX + control.getWidth() * scaleX || offsetX < 0) {
+                        
+                        double insetOffset = getInsets().getRight()/2;
+
+                        double xDiff = event.getSceneX() / parentScaleX - sceneX - insetOffset;
+
+                        double newWidth = xDiff;
+
+                        if (newWidth < control.maxWidth(0)) {
                             control.setPrefWidth(newWidth);
                         }
-
-                        control.autosize();
                     }
                 }
-
-                // again set current Mouse x AND y position
-                mouseX = event.getSceneX();
-                mouseY = event.getSceneY();
 
                 event.consume();
             }
         });
 
-        onMouseClickedProperty().set(new EventHandler<MouseEvent>() {
+        control.onMouseClickedProperty().set(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
 
@@ -280,7 +230,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
             }
         });
 
-        onMouseMovedProperty().set(new EventHandler<MouseEvent>() {
+        control.onMouseMovedProperty().set(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent t) {
 
@@ -294,15 +244,15 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                 final double border = 10;
 
-                double diffMinX = Math.abs(n.getBoundsInLocal().getMinX() - t.getX());
-                double diffMinY = Math.abs(n.getBoundsInLocal().getMinY() - t.getY());
-                double diffMaxX = Math.abs(n.getBoundsInLocal().getMaxX() - t.getX());
-                double diffMaxY = Math.abs(n.getBoundsInLocal().getMaxY() - t.getY());
+                double diffMinX = Math.abs(n.getBoundsInLocal().getMinX() - t.getX() + getInsets().getLeft());
+                double diffMinY = Math.abs(n.getBoundsInLocal().getMinY() - t.getY() + getInsets().getTop());
+                double diffMaxX = Math.abs(n.getBoundsInLocal().getMaxX() - t.getX() - getInsets().getRight());
+                double diffMaxY = Math.abs(n.getBoundsInLocal().getMaxY() - t.getY() - getInsets().getBottom());
 
-                boolean left = diffMinX * scaleX < border;
-                boolean top = diffMinY * scaleY < border;
-                boolean right = diffMaxX * scaleX < border;
-                boolean bottom = diffMaxY * scaleY < border;
+                boolean left = diffMinX * scaleX < Math.max(border, getInsets().getLeft() / 2);
+                boolean top = diffMinY * scaleY < Math.max(border, getInsets().getTop() / 2);
+                boolean right = diffMaxX * scaleX < Math.max(border, getInsets().getRight() / 2);
+                boolean bottom = diffMaxY * scaleY < Math.max(border, getInsets().getBottom() / 2);
 
                 RESIZE_TOP = false;
                 RESIZE_LEFT = false;
@@ -349,6 +299,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                     n.setCursor(Cursor.DEFAULT);
                     resizeMode = ResizeMode.NONE;
                 }
+
+                System.out.println("MODE: " + resizeMode);
 
                 control.autosize();
             }
@@ -493,15 +445,15 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 //        control.getContentPane().relocate(
 //                getInsets().getLeft() * 2,
 //                titleBar.prefHeight(0) + getInsets().getTop());
-        
-        
+
+
         control.getContentPane().relocate(
                 getInsets().getLeft(),
                 titleBar.prefHeight(0));
 
         control.getContentPane().resize(
                 root.getWidth() - leftAndRight,
-                root.getHeight()- getInsets().getBottom()- titleBar.prefHeight(0));
+                root.getHeight() - getInsets().getBottom() - titleBar.prefHeight(0));
     }
 
     /**
