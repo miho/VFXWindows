@@ -92,7 +92,7 @@ public class VFXWindows extends Application {
     private void addAnimatedScaledPane(Pane root) {
         Button btn = new Button("TestBtn TestBtn TestBtn");
         btn.setMinWidth(500);
-        final ScaledContentPane scaledContent = new ScaledContentPane();
+        final ScalableContentPane scaledContent = new ScalableContentPane();
         scaledContent.setStyle("-fx-border-color: rgb(255,0,0);\n"
                 + "-fx-border-width: 10;\n");
         scaledContent.getContentPane().setStyle("-fx-border-color: rgb(0,255,0);\n"
@@ -130,7 +130,7 @@ public class VFXWindows extends Application {
 
     private Window _createWindowHierarchy(Window node, int c, int max) {
 
-        final ScaledContentPane scaledContent = new ScaledContentPane();
+        final ScalableContentPane scaledContent = new ScalableContentPane();
         scaledContent.setStyle("-fx-border-color: rgb(255,255,255);\n"
                 + "-fx-background-color: rgba(0,0,0,0.4);"
                 + "-fx-padding: 10;"

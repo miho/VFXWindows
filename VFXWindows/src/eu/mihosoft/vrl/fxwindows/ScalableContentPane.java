@@ -10,6 +10,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 
@@ -17,7 +18,7 @@ import javafx.scene.transform.Scale;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public class ScaledContentPane extends Pane {
+public class ScalableContentPane extends Region {
 
     private Scale contentScaleTransform;
     private Property<Pane> contentPaneProperty =
@@ -26,7 +27,7 @@ public class ScaledContentPane extends Pane {
     private double contentScaleHeight = 1.0;
     private boolean aspectScale = true;
 
-    public ScaledContentPane() {
+    public ScalableContentPane() {
         setContentPane(new RootPane());
 
         setPrefWidth(USE_PREF_SIZE);
