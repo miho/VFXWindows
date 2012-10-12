@@ -10,10 +10,10 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.transform.Transform;
-
 
 /**
  *
@@ -22,7 +22,7 @@ import javafx.scene.transform.Transform;
 public class OptimizableContentPane extends StackPane {
 
     private OptimizationRule optimizationRule;
-    private Collection<Node> detatched = new ArrayList<Node>();
+    private Transform transform;
 
     public OptimizableContentPane() {
         this.optimizationRule = new OptimizationRuleImpl();
@@ -30,26 +30,30 @@ public class OptimizableContentPane extends StackPane {
         localToSceneTransformProperty().addListener(new ChangeListener<Transform>() {
             @Override
             public void changed(ObservableValue<? extends Transform> ov, Transform oldVal, Transform newVal) {
-
-                boolean visible = getOptimizationRule().visible(OptimizableContentPane.this, newVal);
-                boolean attached = getOptimizationRule().attached(OptimizableContentPane.this, newVal);
-
-                if (isVisible() != visible) {
-                    setVisible(visible);
-                }
-
-                if (attached && !detatched.isEmpty()) {
-
-                    getChildren().addAll(detatched);
-                    detatched.clear();
-
-                } else if (!attached && detatched.isEmpty()) {
-                    detatched.addAll(getChildren());
-                    getChildren().removeAll(detatched);
-                    
-                }
+                transform = newVal;
+                updateOptimizationRule();
             }
         });
+
+        boundsInLocalProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> ov, Bounds t, Bounds t1) {
+                updateOptimizationRule();
+            }
+        });
+    }
+
+    private synchronized void updateOptimizationRule() {
+
+        if (transform == null) {
+            transform = OptimizableContentPane.this.localToSceneTransformProperty().get();
+        }
+
+        boolean visible = optimizationRule.visible(this, transform);
+
+        if (isVisible() != visible) {
+            setVisible(visible);
+        }
     }
 
     /**
@@ -66,16 +70,18 @@ public class OptimizableContentPane extends StackPane {
         this.optimizationRule = optimizationRule;
     }
 }
+
 class OptimizationRuleImpl implements OptimizationRule {
 
-    private DoubleProperty minScale = new SimpleDoubleProperty(0.5);
+    private DoubleProperty minSceneArea = new SimpleDoubleProperty(200);
 
     @Override
     public boolean visible(OptimizableContentPane p, Transform t) {
 
-        double scale = Math.min(t.getMxx(), t.getMyy());
+        Bounds bounds = p.getBoundsInLocal();
+        bounds = p.localToScene(bounds);
 
-        return scale >= getMinScale();
+        return getMinSceneArea() <= bounds.getWidth() * bounds.getHeight();
     }
 
     @Override
@@ -83,15 +89,15 @@ class OptimizationRuleImpl implements OptimizationRule {
         return visible(p, t);
     }
 
-    public DoubleProperty minScaleProperty() {
-        return minScale;
+    public DoubleProperty minSceneAreaProperty() {
+        return minSceneArea;
     }
 
-    public void setMinScale(double s) {
-        minScale.set(s);
+    public void setMinSceneArea(double s) {
+        minSceneArea.set(s);
     }
 
-    public double getMinScale() {
-        return minScale.get();
+    public double getMinSceneArea() {
+        return minSceneArea.get();
     }
 }

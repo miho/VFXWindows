@@ -44,6 +44,8 @@ public class VFXWindows extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        
+        System.out.println("1");
 
         // we use a default pane without layout such as HBox, VBox etc.
         final Pane root = new Pane();

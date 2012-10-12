@@ -185,9 +185,9 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double insetOffset = getInsets().getTop() / 2;
 
-                        double yDiff = 
-                                sceneY / parentScaleY 
-                                + insetOffset 
+                        double yDiff =
+                                sceneY / parentScaleY
+                                + insetOffset
                                 - event.getSceneY() / parentScaleY;
 
                         double newHeight = control.getPrefHeight() + yDiff;
@@ -203,8 +203,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double insetOffset = getInsets().getLeft() / 2;
 
-                        double xDiff = sceneX / parentScaleX 
-                                + insetOffset 
+                        double xDiff = sceneX / parentScaleX
+                                + insetOffset
                                 - event.getSceneX() / parentScaleX;
 
                         double newWidth = control.getPrefWidth() + xDiff;
@@ -515,7 +515,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         double result = root.minHeight(d);
         result = Math.max(result,
                 titleBar.prefHeight(d)
-                //                + control.getContentPane().minHeight(d)
+                + control.getContentPane().minHeight(d)
                 + getInsets().getBottom());
 
         return result;

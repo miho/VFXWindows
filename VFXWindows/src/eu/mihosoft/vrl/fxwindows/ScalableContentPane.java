@@ -97,10 +97,6 @@ public class ScalableContentPane extends Region {
             contentScaleWidth = scale;
             contentScaleHeight = scale;
         }
-//
-//        System.out.println("rw: " + realWidth);
-//        System.out.println("scale: " + contentScaleWidth);
-//        System.out.println("cw: " + getBoundsInLocal().getWidth());
 
         getContentScaleTransform().setX(contentScaleWidth);
         getContentScaleTransform().setY(contentScaleHeight);
@@ -116,7 +112,7 @@ public class ScalableContentPane extends Region {
     @Override
     protected double computeMinWidth(double d) {
 
-        double result = 1;//minWidth(d);
+        double result = getInsets().getLeft() + getInsets().getRight()+1;
 //        result = Math.min(result, getContentPane().minWidth(d) * contentScale);
 
         return result;//getContentPane().minWidth(d) * contentScale;
@@ -125,7 +121,7 @@ public class ScalableContentPane extends Region {
     @Override
     protected double computeMinHeight(double d) {
 
-        double result = 1;//minHeight(d);
+        double result = getInsets().getTop() + getInsets().getBottom()+1;
 //        result = Math.min(result,
 //                +getContentPane().minHeight(d) * contentScale);
 
