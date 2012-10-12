@@ -4,7 +4,6 @@
  */
 package eu.mihosoft.vrl.fxwindows;
 
-import javafx.scene.layout.Pane;
 import javafx.scene.transform.Transform;
 
 /**

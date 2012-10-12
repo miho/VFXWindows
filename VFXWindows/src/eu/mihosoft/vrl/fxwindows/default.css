@@ -22,3 +22,8 @@
     /*-fx-padding: -2;*/
 }
 
+.window-icon {
+    -fx-skin: "eu.mihosoft.vrl.fxwindows.DefaultWindowIconSkin";
+    -fx-border-color: rgb(255,255,255);
+}
+
