@@ -28,7 +28,9 @@ public class Window extends Control {
     private StringProperty titleProperty = new SimpleStringProperty("Title");
     private Property<Pane> contentPaneProperty =
             new SimpleObjectProperty<Pane>();
-    private ObservableList<WindowIcon> icons =
+    private ObservableList<WindowIcon> leftIcons =
+            FXCollections.observableArrayList();
+    private ObservableList<WindowIcon> rightIcons =
             FXCollections.observableArrayList();
 
     public Window() {
@@ -101,7 +103,14 @@ public class Window extends Control {
     /**
      * @return the icons
      */
-    public ObservableList<WindowIcon> getIcons() {
-        return icons;
+    public ObservableList<WindowIcon> getLeftIcons() {
+        return leftIcons;
+    }
+
+    /**
+     * @return the icons
+     */
+    public ObservableList<WindowIcon> getRightIcons() {
+        return rightIcons;
     }
 }

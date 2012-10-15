@@ -17,6 +17,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -63,10 +64,61 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         getChildren().add(root);
         root.getChildren().add(titleBar);
 
-        control.getIcons().addListener(new ListChangeListener<WindowIcon>() {
+        for (WindowIcon i : control.getLeftIcons()) {
+            titleBar.addLeftIcon(i);
+        }
+
+        for (WindowIcon i : control.getRightIcons()) {
+            titleBar.addRightIcon(i);
+        }
+
+        control.getLeftIcons().addListener(new ListChangeListener<WindowIcon>() {
             @Override
             public void onChanged(ListChangeListener.Change<? extends WindowIcon> change) {
-                //
+                while (change.next()) {
+                    if (change.wasPermutated()) {
+                        for (int i = change.getFrom(); i < change.getTo(); ++i) {
+                            //permutate
+                        }
+                    } else if (change.wasUpdated()) {
+                        //update item
+                    } else {
+                        if (change.wasRemoved()) {
+                            for (WindowIcon i : change.getRemoved()) {
+                                //
+                            }
+                        } else if (change.wasAdded()) {
+                            for (WindowIcon i : change.getAddedSubList()) {
+                                titleBar.addLeftIcon(i);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        control.getRightIcons().addListener(new ListChangeListener<WindowIcon>() {
+            @Override
+            public void onChanged(ListChangeListener.Change<? extends WindowIcon> change) {
+                while (change.next()) {
+                    if (change.wasPermutated()) {
+                        for (int i = change.getFrom(); i < change.getTo(); ++i) {
+                            //permutate
+                        }
+                    } else if (change.wasUpdated()) {
+                        //update item
+                    } else {
+                        if (change.wasRemoved()) {
+                            for (WindowIcon i : change.getRemoved()) {
+                                //
+                            }
+                        } else if (change.wasAdded()) {
+                            for (WindowIcon i : change.getAddedSubList()) {
+                                titleBar.addRightIcon(i);
+                            }
+                        }
+                    }
+                }
             }
         });
 
@@ -95,10 +147,10 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
             }
         });
 
-        titleBar.addLeftIcon(new TestIcon(new Color(0, 0, 1.0, 0.1)));
-        titleBar.addLeftIcon(new TestIcon(new Color(0, 1.0, 0, 0.1)));
-        titleBar.addRightIcon(new TestIcon(new Color(0, 1.0, 0, 0.1)));
-        titleBar.addRightIcon(new TestIcon(new Color(0, 0, 1.0, 0.1)));
+//        titleBar.addLeftIcon(new TestIcon(new Color(0, 0, 1.0, 0.1)));
+//        titleBar.addLeftIcon(new TestIcon(new Color(0, 1.0, 0, 0.1)));
+//        titleBar.addRightIcon(new TestIcon(new Color(0, 1.0, 0, 0.1)));
+//        titleBar.addRightIcon(new TestIcon(new Color(0, 0, 1.0, 0.1)));
     }
 
     static class TestIcon extends Pane {
@@ -492,13 +544,6 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 root.getHeight() - getInsets().getBottom() - titleBar.prefHeight(0));
     }
 
-    /**
-     * @return the titlebar
-     */
-    Pane getTitlebar() {
-        return titleBar;
-    }
-
     @Override
     protected double computeMinWidth(double d) {
 
@@ -532,8 +577,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
 class TitleBar extends HBox {
 
-    private HBox leftIconPane;
-    private HBox rightIconPane;
+    private Pane leftIconPane;
+    private Pane rightIconPane;
     private Text label = new Text();
     public static final String CSS_STYLE =
             "  -fx-glass-color: rgba(42, 42, 42, 0.9);\n"
@@ -555,19 +600,16 @@ class TitleBar extends HBox {
         label.setTextAlignment(TextAlignment.CENTER);
         label.setStyle("-fx-stroke: rgba(255,255,255,50); -fx-fill: rgba(255,255,255,50);");
 
-        leftIconPane = new IconBox(this);
-        rightIconPane = new IconBox(this);
+        leftIconPane = new IconPane();
+        rightIconPane = new IconPane();
 
         setAlignment(Pos.CENTER);
 
-//        getChildren().add(leftIconPane);
+        getChildren().add(leftIconPane);
         getChildren().add(VFXLayoutUtil.createHBoxFiller());
         getChildren().add(label);
         getChildren().add(VFXLayoutUtil.createHBoxFiller());
-//        getChildren().add(rightIconPane);
-
-//        setPrefWidth(USE_COMPUTED_SIZE);
-//        setPrefHeight(USE_COMPUTED_SIZE);
+        getChildren().add(rightIconPane);
     }
 
     public void setTitle(String title) {
@@ -580,10 +622,57 @@ class TitleBar extends HBox {
 
     public void addLeftIcon(Node n) {
         leftIconPane.getChildren().add(n);
+        layout();
+        layoutChildren();
     }
 
     public void addRightIcon(Node n) {
         rightIconPane.getChildren().add(n);
+        layout();
+        layoutChildren();
+    }
+
+    private static class IconPane extends Pane {
+
+        public IconPane() {
+            //
+        }
+
+        @Override
+        protected void layoutChildren() {
+
+            super.layoutChildren();
+
+            int count = 0;
+
+            double width = getHeight();
+            double height = getHeight();
+
+            for (Node n : getManagedChildren()) {
+                n.resizeRelocate(width * count, 0, width, height);
+                count++;
+            }
+
+            // TODO why do we need this?
+            // Either I don't understand layouts or this is a bug.
+            getParent().autosize();
+            getParent().getParent().autosize();
+        }
+
+        @Override
+        protected double computeMinWidth(double h) {
+            return getHeight() * getChildren().size();
+        }
+
+        @Override
+        protected double computeMaxWidth(double h) {
+            return getHeight() * getChildren().size();
+        }
+
+        @Override
+        protected double computePrefWidth(double h) {
+            return getHeight() * getChildren().size();
+        }
     }
 }
 
@@ -598,63 +687,4 @@ enum ResizeMode {
     TOP_RIGHT,
     BOTTOM_LEFT,
     BOTTOM_RIGHT
-}
-
-class IconBox extends HBox {
-
-    public IconBox(final TitleBar titleBar) {
-//        minWidthProperty().bind(new DoubleBinding() {
-//            {
-//                super.bind(minWidthProperty(), titleBar.heightProperty());
-//            }
-//
-//            @Override
-//            protected double computeValue() {
-//                double v = (titleBar.getHeight() - titleBar.getInsets().getTop()
-//                        - titleBar.getInsets().getBottom())
-//                        * getManagedChildren().size();
-//                return v;
-//            }
-//        });
-//
-//        prefWidthProperty().bind(new DoubleBinding() {
-//            {
-//                super.bind(minWidthProperty(), titleBar.heightProperty());
-//            }
-//
-//            @Override
-//            protected double computeValue() {
-//                double v = (titleBar.getHeight() - titleBar.getInsets().getTop()
-//                        - titleBar.getInsets().getBottom())
-//                        * getManagedChildren().size();
-//                return v;
-//            }
-//        });
-    }
-
-//    @Override
-//    protected void layoutChildren() {
-//
-//        int childrenCount = getManagedChildren().size();
-//        double childWidth = getWidth() / childrenCount;
-//
-//        for (Node n : getManagedChildren()) {
-//            if (n instanceof Region) {
-//                Region r = (Region) n;
-//                r.setMinSize(childWidth, childWidth);
-//                r.setPrefSize(childWidth, childWidth);
-//            }
-//        }
-//
-//        super.layoutChildren();
-//    }
-
-//    @Override
-//    protected double computeMinHeight(double w) {
-//        if (!getManagedChildren().isEmpty()) {
-//            return getManagedChildren().get(0).minHeight(w);
-//        }
-//
-//        return super.computeMinHeight(w);
-//    }
 }

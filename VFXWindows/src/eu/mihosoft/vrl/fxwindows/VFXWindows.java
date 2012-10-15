@@ -40,6 +40,11 @@ public class VFXWindows extends Application {
 
                 Window node = createWindowHierarchy(
                         new Window("W (" + (x + 1) + "," + (y + 1) + ")"), numLevels);
+                
+                node.getLeftIcons().add(new WindowIcon());
+                node.getLeftIcons().add(new WindowIcon());
+                node.getRightIcons().add(new WindowIcon());
+                node.getRightIcons().add(new WindowIcon());
 
                 node.setPrefSize(220, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
