@@ -6,14 +6,17 @@ package eu.mihosoft.vrl.fxwindows;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -40,19 +43,35 @@ public class VFXWindows extends Application {
 
                 final Window node = createWindowHierarchy(
                         new Window("W (" + (x + 1) + "," + (y + 1) + ")"), numLevels);
-                
+
                 WindowIcon leftIcon = new WindowIcon();
                 leftIcon.setOnAction(new EventHandler<ActionEvent>() {
-
                     @Override
                     public void handle(ActionEvent t) {
-                        System.out.println("clicked");
                         VFXNodeUtils.removeFromParent(node);
                     }
                 });
-                
+
                 node.getLeftIcons().add(leftIcon);
-                node.getRightIcons().add(new WindowIcon());
+
+                WindowIcon rightIcon = new WindowIcon();
+                rightIcon.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent t) {
+
+                        RotateTransition rotationY = new RotateTransition();
+                        rotationY.setAxis(Rotate.Z_AXIS);
+                        rotationY.setDuration(Duration.seconds(1));
+                        rotationY.setByAngle(360);
+                        rotationY.setNode(node);
+//                        rotationY.setAutoReverse(true);
+                        rotationY.setCycleCount(1);
+                        rotationY.play();
+                    }
+                });
+
+
+                node.getRightIcons().add(rightIcon);
 
                 node.setPrefSize(200, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
