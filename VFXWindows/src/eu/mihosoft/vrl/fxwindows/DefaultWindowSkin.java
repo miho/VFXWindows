@@ -9,6 +9,7 @@ import com.sun.javafx.scene.control.skin.SkinBase;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -61,6 +62,13 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
         getChildren().add(root);
         root.getChildren().add(titleBar);
+
+        control.getIcons().addListener(new ListChangeListener<WindowIcon>() {
+            @Override
+            public void onChanged(ListChangeListener.Change<? extends WindowIcon> change) {
+                //
+            }
+        });
 
 
         initMouseEventHandlers();
@@ -595,58 +603,58 @@ enum ResizeMode {
 class IconBox extends HBox {
 
     public IconBox(final TitleBar titleBar) {
-        minWidthProperty().bind(new DoubleBinding() {
-            {
-                super.bind(minWidthProperty(), titleBar.heightProperty());
-            }
-
-            @Override
-            protected double computeValue() {
-                double v = (titleBar.getHeight() - titleBar.getInsets().getTop()
-                        - titleBar.getInsets().getBottom())
-                        * getManagedChildren().size();
-                return v;
-            }
-        });
-
-        prefWidthProperty().bind(new DoubleBinding() {
-            {
-                super.bind(minWidthProperty(), titleBar.heightProperty());
-            }
-
-            @Override
-            protected double computeValue() {
-                double v = (titleBar.getHeight() - titleBar.getInsets().getTop()
-                        - titleBar.getInsets().getBottom())
-                        * getManagedChildren().size();
-                return v;
-            }
-        });
+//        minWidthProperty().bind(new DoubleBinding() {
+//            {
+//                super.bind(minWidthProperty(), titleBar.heightProperty());
+//            }
+//
+//            @Override
+//            protected double computeValue() {
+//                double v = (titleBar.getHeight() - titleBar.getInsets().getTop()
+//                        - titleBar.getInsets().getBottom())
+//                        * getManagedChildren().size();
+//                return v;
+//            }
+//        });
+//
+//        prefWidthProperty().bind(new DoubleBinding() {
+//            {
+//                super.bind(minWidthProperty(), titleBar.heightProperty());
+//            }
+//
+//            @Override
+//            protected double computeValue() {
+//                double v = (titleBar.getHeight() - titleBar.getInsets().getTop()
+//                        - titleBar.getInsets().getBottom())
+//                        * getManagedChildren().size();
+//                return v;
+//            }
+//        });
     }
 
-    @Override
-    protected void layoutChildren() {
+//    @Override
+//    protected void layoutChildren() {
+//
+//        int childrenCount = getManagedChildren().size();
+//        double childWidth = getWidth() / childrenCount;
+//
+//        for (Node n : getManagedChildren()) {
+//            if (n instanceof Region) {
+//                Region r = (Region) n;
+//                r.setMinSize(childWidth, childWidth);
+//                r.setPrefSize(childWidth, childWidth);
+//            }
+//        }
+//
+//        super.layoutChildren();
+//    }
 
-        int childrenCount = getManagedChildren().size();
-        double childWidth = getWidth() / childrenCount;
-
-        for (Node n : getManagedChildren()) {
-            if (n instanceof Region) {
-                Region r = (Region) n;
-                r.setMinSize(childWidth, childWidth);
-                r.setPrefSize(childWidth, childWidth);
-            }
-        }
-
-        super.layoutChildren();
-    }
-
-    @Override
-    protected double computeMinHeight(double w) {
-        if (!getManagedChildren().isEmpty()) {
-            return getManagedChildren().get(0).minHeight(w);
-        }
-
-        return super.computeMinHeight(w);
-    }
+//    @Override
+//    protected double computeMinHeight(double w) {
+//        if (!getManagedChildren().isEmpty()) {
+//            return getManagedChildren().get(0).minHeight(w);
+//        }
+//
+//        return super.computeMinHeight(w);
+//    }
 }

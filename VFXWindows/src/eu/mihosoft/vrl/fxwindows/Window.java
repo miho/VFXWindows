@@ -8,6 +8,8 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Control;
 import javafx.scene.layout.Pane;
@@ -26,6 +28,8 @@ public class Window extends Control {
     private StringProperty titleProperty = new SimpleStringProperty("Title");
     private Property<Pane> contentPaneProperty =
             new SimpleObjectProperty<Pane>();
+    private ObservableList<WindowIcon> icons =
+            FXCollections.observableArrayList();
 
     public Window() {
         init();
@@ -75,7 +79,6 @@ public class Window extends Control {
     public boolean isMoveToFront() {
         return moveToFront;
     }
-    
 
     /**
      * @return the title
@@ -93,5 +96,12 @@ public class Window extends Control {
 
     public final StringProperty titleProperty() {
         return titleProperty;
+    }
+
+    /**
+     * @return the icons
+     */
+    public ObservableList<WindowIcon> getIcons() {
+        return icons;
     }
 }

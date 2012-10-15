@@ -6,6 +6,8 @@ package eu.mihosoft.vrl.fxwindows;
 
 import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.skin.SkinBase;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ListChangeListener.Change;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
@@ -13,11 +15,13 @@ import javafx.scene.layout.StackPane;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public class DefaultWindowIconSkin extends SkinBase<Window, BehaviorBase<Window>> {
-    
-//    private Pane root = new StackPane();
+public class DefaultWindowIconSkin extends SkinBase<WindowIcon, BehaviorBase<WindowIcon>> {
 
-    public DefaultWindowIconSkin(Window c) {
-        super(c, new BehaviorBase<Window>(c));
+//    private Pane root = new StackPane();
+    public DefaultWindowIconSkin(WindowIcon c) {
+        super(c, new BehaviorBase<WindowIcon>(c));
+
+
+
     }
 }

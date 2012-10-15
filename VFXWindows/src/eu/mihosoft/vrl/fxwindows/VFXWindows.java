@@ -6,20 +6,13 @@ package eu.mihosoft.vrl.fxwindows;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
-import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -31,45 +24,32 @@ import javafx.util.Duration;
  */
 public class VFXWindows extends Application {
 
-    public static final String CSS_STYLE =
-            "  -fx-glass-color: rgba(85, 132, 160, 0.9);\n"
-            + "  -fx-alignment: center;\n"
-            + "  -fx-font-size: 20;\n"
-            + "  -fx-background-color: linear-gradient(to bottom, derive(-fx-glass-color, 50%), -fx-glass-color);\n"
-            + "  -fx-border-color: derive(-fx-glass-color, -60%);\n"
-            + "  -fx-border-width: 2;\n"
-            + "  -fx-background-insets: 1;\n"
-            + "  -fx-border-radius: 3;\n"
-            + "  -fx-background-radius: 3;\n";
-
     @Override
     public void start(Stage primaryStage) {
-        
-        System.out.println("1");
 
         // we use a default pane without layout such as HBox, VBox etc.
         final Pane root = new Pane();
         final Scene scene = new Scene(root, 1024, 768, Color.rgb(160, 160, 160));
 
-//        if (false)
-        for (int j = 0; j < 4; j++) {
+        final int n = 4; // number of nodes to add
+        final double spacing = 30; // spacing between nodes
+        final int numLevels = 5; // number of window levels
 
-            final int numNodes = 4; // number of nodes to add
-            final double spacing = 30; // spacing between nodes
+        for (int y = 0; y < n; y++) {
+            for (int x = 0; x < n; x++) {
 
-            // add numNodes instances of DraggableNode to the root pane
-            for (int i = 0; i < numNodes; i++) {
                 Window node = createWindowHierarchy(
-                        new Window("W (" + (i + 1) + "," + (j + 1) + ")"), 8);
+                        new Window("W (" + (x + 1) + "," + (y + 1) + ")"), numLevels);
 
                 node.setPrefSize(220, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
                 // position the node
-                node.setLayoutX(spacing * (i + 1) + node.getPrefWidth() * i);
-                node.setLayoutY(spacing + (spacing + node.getPrefHeight()) * j);
+                node.setLayoutX(spacing * (x + 1) + node.getPrefWidth() * x);
+                node.setLayoutY(spacing + (spacing + node.getPrefHeight()) * y);
                 // add the node to the root pane 
                 root.getChildren().add(node);
+
             }
         }
 
@@ -138,6 +118,7 @@ public class VFXWindows extends Application {
                 + "-fx-padding: 10;"
                 + "-fx-border-radius: 3;"
                 + "-fx-background-radius: 3;");
+        // shadows are totally inefficient (maybe we use it for selected windows)
 //                        + "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 0.0, 0.0);");
 
         scaledContent.setPrefSize(100, 100);
@@ -150,9 +131,9 @@ public class VFXWindows extends Application {
 
         ZoomableContentPane zoomContent = new ZoomableContentPane();
         zoomContent.getChildren().add(scaledContent);
-        
+
         OptimizableContentPane optContent = new OptimizableContentPane();
-        
+
         optContent.getChildren().add(zoomContent);
 
         zoomContent.setZoomedWidth(500);
@@ -177,7 +158,6 @@ public class VFXWindows extends Application {
         _createWindowHierarchy(inner1, c, max);
 
         scaledContent.getContentPane().getChildren().add(inner1);
-
 
         Window inner2 = new Window("L" + c);
 
