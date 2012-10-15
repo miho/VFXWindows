@@ -122,7 +122,6 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
             }
         });
 
-
         initMouseEventHandlers();
 
         titleBar.setTitle(control.getTitle());
@@ -147,27 +146,6 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
             }
         });
 
-//        titleBar.addLeftIcon(new TestIcon(new Color(0, 0, 1.0, 0.1)));
-//        titleBar.addLeftIcon(new TestIcon(new Color(0, 1.0, 0, 0.1)));
-//        titleBar.addRightIcon(new TestIcon(new Color(0, 1.0, 0, 0.1)));
-//        titleBar.addRightIcon(new TestIcon(new Color(0, 0, 1.0, 0.1)));
-    }
-
-    static class TestIcon extends Pane {
-
-        public TestIcon(Color c) {
-            Rectangle rect = new Rectangle();
-            rect.setFill(c);
-            getChildren().add(rect);
-
-            rect.widthProperty().bind(this.widthProperty());
-            rect.heightProperty().bind(this.heightProperty());
-        }
-
-        @Override
-        protected double computeMinWidth(double h) {
-            return super.computeMaxWidth(h);
-        }
     }
 
     private void initMouseEventHandlers() {
