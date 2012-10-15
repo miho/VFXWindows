@@ -4,14 +4,17 @@
  */
 package eu.mihosoft.vrl.fxwindows;
 
+import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.RotateTransition;
+import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
@@ -48,7 +51,24 @@ public class VFXWindows extends Application {
                 leftIcon.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent t) {
-                        VFXNodeUtils.removeFromParent(node);
+
+                        ScaleTransition st = new ScaleTransition();
+                        st.setNode(node);
+                        st.setFromX(1);
+                        st.setFromY(1);
+                        st.setToX(0);
+                        st.setToY(0);
+                        st.setDuration(Duration.seconds(0.2));
+                        st.statusProperty().addListener(new ChangeListener<Status>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Status> observableValue,
+                                    Status oldValue, Status newValue) {
+                                if (newValue == Status.STOPPED) {
+                                    VFXNodeUtils.removeFromParent(node);
+                                }
+                            }
+                        });
+                        st.play();
                     }
                 });
 
