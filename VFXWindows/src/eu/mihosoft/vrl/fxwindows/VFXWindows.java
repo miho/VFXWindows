@@ -38,12 +38,20 @@ public class VFXWindows extends Application {
         for (int y = 0; y < n; y++) {
             for (int x = 0; x < n; x++) {
 
-                Window node = createWindowHierarchy(
+                final Window node = createWindowHierarchy(
                         new Window("W (" + (x + 1) + "," + (y + 1) + ")"), numLevels);
                 
-                node.getLeftIcons().add(new WindowIcon());
-                node.getLeftIcons().add(new WindowIcon());
-                node.getRightIcons().add(new WindowIcon());
+                WindowIcon leftIcon = new WindowIcon();
+                leftIcon.setOnAction(new EventHandler<ActionEvent>() {
+
+                    @Override
+                    public void handle(ActionEvent t) {
+                        System.out.println("clicked");
+                        VFXNodeUtils.removeFromParent(node);
+                    }
+                });
+                
+                node.getLeftIcons().add(leftIcon);
                 node.getRightIcons().add(new WindowIcon());
 
                 node.setPrefSize(220, 120);
@@ -54,7 +62,6 @@ public class VFXWindows extends Application {
                 node.setLayoutY(spacing + (spacing + node.getPrefHeight()) * y);
                 // add the node to the root pane 
                 root.getChildren().add(node);
-
             }
         }
 

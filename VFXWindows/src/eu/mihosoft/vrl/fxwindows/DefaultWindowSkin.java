@@ -85,7 +85,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                     } else {
                         if (change.wasRemoved()) {
                             for (WindowIcon i : change.getRemoved()) {
-                                //
+                                titleBar.removeLeftIcon(i);
                             }
                         } else if (change.wasAdded()) {
                             for (WindowIcon i : change.getAddedSubList()) {
@@ -110,7 +110,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                     } else {
                         if (change.wasRemoved()) {
                             for (WindowIcon i : change.getRemoved()) {
-                                //
+                                titleBar.removeRightIcon(i);
                             }
                         } else if (change.wasAdded()) {
                             for (WindowIcon i : change.getAddedSubList()) {
@@ -463,8 +463,6 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     @Override
     protected void layoutChildren() {
 
-//        System.out.println("skin: layout " + System.currentTimeMillis());
-
         super.layoutChildren();
 
         root.relocate(0, 0);
@@ -481,37 +479,15 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
             setWidth(titleBarWidth);
         }
 
-        double newTitleBarWidth = Math.max(
+        double newTitleBarWidth =
+                Math.max(
                 titleBarWidth,
                 windowWidth);
 
         titleBar.resize(newTitleBarWidth, titleBar.prefHeight(0));
 
-//        double viewWidth = Math.max(control.getContentPane().prefWidth(0),
-//                root.getWidth());
-//
-//        double viewHeight = Math.max(control.getContentPane().prefHeight(0),
-//                root.getHeight() - titleBar.getHeight());
-//
         double leftAndRight = getInsets().getLeft() + getInsets().getRight();
         double topAndBottom = getInsets().getTop() + getInsets().getBottom();
-//
-//        double scaleWidth = (root.getWidth() - leftAndRight) / viewWidth;
-//        double scaleHeight = (root.getHeight() - topAndBottom) / viewHeight;
-//
-//        contentScale = Math.min(scaleWidth, scaleHeight);
-//
-//        control.getContentPane().resize(
-//                viewWidth - leftAndRight / contentScale,
-//                viewHeight - topAndBottom / contentScale);
-//
-//        control.getContentScaleTransform().setX(contentScale);
-//        control.getContentScaleTransform().setY(contentScale);
-//
-//        control.getContentPane().relocate(
-//                getInsets().getLeft() * 2,
-//                titleBar.prefHeight(0) + getInsets().getTop());
-
 
         control.getContentPane().relocate(
                 getInsets().getLeft(),
@@ -520,6 +496,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         control.getContentPane().resize(
                 root.getWidth() - leftAndRight,
                 root.getHeight() - getInsets().getBottom() - titleBar.prefHeight(0));
+
     }
 
     @Override
@@ -581,7 +558,7 @@ class TitleBar extends HBox {
         leftIconPane = new IconPane();
         rightIconPane = new IconPane();
 
-        setAlignment(Pos.CENTER);
+//        setAlignment(Pos.CENTER);
 
         getChildren().add(leftIconPane);
         getChildren().add(VFXLayoutUtil.createHBoxFiller());
@@ -600,41 +577,85 @@ class TitleBar extends HBox {
 
     public void addLeftIcon(Node n) {
         leftIconPane.getChildren().add(n);
-        layout();
-        layoutChildren();
     }
 
     public void addRightIcon(Node n) {
         rightIconPane.getChildren().add(n);
-        layout();
-        layoutChildren();
+    }
+
+    public void removeLeftIcon(Node n) {
+        leftIconPane.getChildren().remove(n);
+    }
+
+    public void removeRightIcon(Node n) {
+        rightIconPane.getChildren().remove(n);
+    }
+
+    @Override
+    protected double computeMinWidth(double h) {
+        double result = super.computeMinWidth(h);
+
+        result = Math.max(result,
+                leftIconPane.prefWidth(h)
+                + label.prefWidth(h)
+                + rightIconPane.prefWidth(h));
+
+        return result;
+    }
+
+    @Override
+    protected double computePrefWidth(double h) {
+
+        return computeMinWidth(h);
+    }
+
+    @Override
+    protected void layoutChildren() {
+        super.layoutChildren();
+
+        leftIconPane.resizeRelocate(0, 0,
+                leftIconPane.prefWidth(USE_PREF_SIZE), getHeight());
+
+        rightIconPane.resize(rightIconPane.prefWidth(USE_PREF_SIZE), getHeight());
+        rightIconPane.relocate(getWidth() - rightIconPane.getWidth(), 0);
     }
 
     private static class IconPane extends Pane {
 
         public IconPane() {
+            setManaged(false);
             //
+            setPrefWidth(USE_COMPUTED_SIZE);
+            setMinWidth(USE_COMPUTED_SIZE);
         }
 
         @Override
         protected void layoutChildren() {
 
-            super.layoutChildren();
+//            super.layoutChildren();
 
             int count = 0;
 
             double width = getHeight();
             double height = getHeight();
 
+            double parentPrefWidth = getWidth();
+
             for (Node n : getManagedChildren()) {
-                n.resizeRelocate(width * count, 0, width, height);
+
+                double x = width * count;
+
+                n.resizeRelocate(x, 0, width, height);
+
+//                if (x + width > parentPrefWidth) {
+//                    getParent().layout();
+//                    getParent().getParent().getParent().layout();
+//                }
+
                 count++;
             }
 
-            // TODO why do we need this?
-            // Either I don't understand layouts or this is a bug.
-            getParent().autosize();
-            getParent().getParent().autosize();
+
         }
 
         @Override
