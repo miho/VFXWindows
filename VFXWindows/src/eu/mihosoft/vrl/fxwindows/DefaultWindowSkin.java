@@ -145,7 +145,6 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 newValue.setManaged(false);
             }
         });
-
     }
 
     private void initMouseEventHandlers() {
@@ -496,7 +495,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         control.getContentPane().resize(
                 root.getWidth() - leftAndRight,
                 root.getHeight() - getInsets().getBottom() - titleBar.prefHeight(0));
-
+        
+        titleBar.layoutChildren();
     }
 
     @Override
@@ -558,13 +558,12 @@ class TitleBar extends HBox {
         leftIconPane = new IconPane();
         rightIconPane = new IconPane();
 
-//        setAlignment(Pos.CENTER);
-
         getChildren().add(leftIconPane);
-        getChildren().add(VFXLayoutUtil.createHBoxFiller());
+//        getChildren().add(VFXLayoutUtil.createHBoxFiller());
         getChildren().add(label);
-        getChildren().add(VFXLayoutUtil.createHBoxFiller());
+//        getChildren().add(VFXLayoutUtil.createHBoxFiller());
         getChildren().add(rightIconPane);
+
     }
 
     public void setTitle(String title) {
@@ -612,12 +611,15 @@ class TitleBar extends HBox {
     @Override
     protected void layoutChildren() {
         super.layoutChildren();
+        
+        leftIconPane.resizeRelocate(getInsets().getLeft(), getInsets().getTop(),
+                leftIconPane.prefWidth(USE_PREF_SIZE),
+                getHeight()-getInsets().getTop() - getInsets().getBottom());
 
-        leftIconPane.resizeRelocate(0, 0,
-                leftIconPane.prefWidth(USE_PREF_SIZE), getHeight());
-
-        rightIconPane.resize(rightIconPane.prefWidth(USE_PREF_SIZE), getHeight());
-        rightIconPane.relocate(getWidth() - rightIconPane.getWidth(), 0);
+        rightIconPane.resize(rightIconPane.prefWidth(USE_PREF_SIZE),
+                getHeight()-getInsets().getTop() - getInsets().getBottom());
+        rightIconPane.relocate(getWidth() - rightIconPane.getWidth()-getInsets().getRight(),
+                getInsets().getTop());
     }
 
     private static class IconPane extends Pane {
@@ -632,14 +634,10 @@ class TitleBar extends HBox {
         @Override
         protected void layoutChildren() {
 
-//            super.layoutChildren();
-
             int count = 0;
 
             double width = getHeight();
             double height = getHeight();
-
-            double parentPrefWidth = getWidth();
 
             for (Node n : getManagedChildren()) {
 
@@ -647,15 +645,8 @@ class TitleBar extends HBox {
 
                 n.resizeRelocate(x, 0, width, height);
 
-//                if (x + width > parentPrefWidth) {
-//                    getParent().layout();
-//                    getParent().getParent().getParent().layout();
-//                }
-
                 count++;
             }
-
-
         }
 
         @Override
