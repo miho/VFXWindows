@@ -275,7 +275,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double newWidth = xDiff;
 
-                        if (newWidth < control.maxWidth(0)) {
+                        if (newWidth < control.maxWidth(0) 
+                                && newWidth > control.minWidth(0)) {
                             control.setPrefWidth(newWidth);
                         }
                     }
@@ -495,7 +496,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         control.getContentPane().resize(
                 root.getWidth() - leftAndRight,
                 root.getHeight() - getInsets().getBottom() - titleBar.prefHeight(0));
-        
+
         titleBar.layoutChildren();
     }
 
@@ -503,7 +504,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     protected double computeMinWidth(double d) {
 
         double result = root.minWidth(d);
-        result = Math.max(result, titleBar.prefWidth(d));
+        result = Math.max(result,
+                titleBar.prefWidth(d));
 
         return result;
     }
@@ -511,10 +513,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     @Override
     protected double computePrefWidth(double d) {
 
-        double result = root.minWidth(d);
-        result = Math.max(result, titleBar.prefWidth(d));
-
-        return result;
+        return computeMinWidth(d);
     }
 
     @Override
@@ -545,6 +544,8 @@ class TitleBar extends HBox {
             + "  -fx-background-insets: 1;\n"
             + "  -fx-border-radius: 3;\n"
             + "  -fx-background-radius: 3;\n";
+    
+    private double spacing = 3;
 
     public TitleBar() {
 
@@ -594,31 +595,36 @@ class TitleBar extends HBox {
     protected double computeMinWidth(double h) {
         double result = super.computeMinWidth(h);
 
-        result = Math.max(result,
-                leftIconPane.prefWidth(h)
-                + label.prefWidth(h)
-                + rightIconPane.prefWidth(h));
+        double iconWidth =
+                Math.max(
+                leftIconPane.prefWidth(h),
+                rightIconPane.prefWidth(h)) * 2;
 
-        return result;
+        result = Math.max(result,
+                iconWidth
+                + label.prefWidth(h)
+                + getInsets().getLeft()
+                + getInsets().getRight());
+
+        return result + spacing*2;
     }
 
     @Override
     protected double computePrefWidth(double h) {
-
         return computeMinWidth(h);
     }
 
     @Override
     protected void layoutChildren() {
         super.layoutChildren();
-        
+
         leftIconPane.resizeRelocate(getInsets().getLeft(), getInsets().getTop(),
                 leftIconPane.prefWidth(USE_PREF_SIZE),
-                getHeight()-getInsets().getTop() - getInsets().getBottom());
+                getHeight() - getInsets().getTop() - getInsets().getBottom());
 
         rightIconPane.resize(rightIconPane.prefWidth(USE_PREF_SIZE),
-                getHeight()-getInsets().getTop() - getInsets().getBottom());
-        rightIconPane.relocate(getWidth() - rightIconPane.getWidth()-getInsets().getRight(),
+                getHeight() - getInsets().getTop() - getInsets().getBottom());
+        rightIconPane.relocate(getWidth() - rightIconPane.getWidth() - getInsets().getRight(),
                 getInsets().getTop());
     }
 
@@ -656,12 +662,12 @@ class TitleBar extends HBox {
 
         @Override
         protected double computeMaxWidth(double h) {
-            return getHeight() * getChildren().size();
+            return computeMinWidth(h);
         }
 
         @Override
         protected double computePrefWidth(double h) {
-            return getHeight() * getChildren().size();
+            return computeMinWidth(h);
         }
     }
 }

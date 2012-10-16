@@ -71,6 +71,8 @@ public class VFXWindows extends Application {
                         st.play();
                     }
                 });
+                
+                node.getLeftIcons().add(new WindowIcon());
 
                 node.getLeftIcons().add(leftIcon);
 
@@ -89,7 +91,6 @@ public class VFXWindows extends Application {
                         rotationY.play();
                     }
                 });
-
 
                 node.getRightIcons().add(rightIcon);
 
