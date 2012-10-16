@@ -534,34 +534,27 @@ class TitleBar extends HBox {
     private Pane leftIconPane;
     private Pane rightIconPane;
     private Text label = new Text();
-//    public static final String CSS_STYLE =
-//            "  -fx-glass-color: rgba(42, 42, 42, 0.9);\n"
-//            + "  -fx-alignment: center;\n"
-//            + "  -fx-font-size: 20;\n"
-//            + "  -fx-background-color: linear-gradient(to bottom, derive(-fx-glass-color, 30%), -fx-glass-color);\n"
-//            + "  -fx-border-color: derive(-fx-glass-color, -60%);\n"
-//            + "  -fx-border-width: 2;\n"
-//            + "  -fx-background-insets: 1;\n"
-//            + "  -fx-border-radius: 3;\n"
-//            + "  -fx-background-radius: 3;\n";
-    
-    public static final String DEFAULT_STYLE_CLASS = "window-titlebar";
-    public static final String DEFAULT_STYLE =
-            "/eu/mihosoft/vrl/fxwindows/default.css";
+    public static final String CSS_STYLE =
+            "  -fx-glass-color: rgba(42, 42, 42, 0.9);\n"
+            + "  -fx-alignment: center;\n"
+            + "  -fx-font-size: 20;\n"
+            + "  -fx-background-color: linear-gradient(to bottom, derive(-fx-glass-color, 30%), -fx-glass-color);\n"
+            + "  -fx-border-color: derive(-fx-glass-color, -60%);\n"
+            + "  -fx-border-width: 2;\n"
+            + "  -fx-background-insets: 1;\n"
+            + "  -fx-border-radius: 3;\n"
+            + "  -fx-background-radius: 3;\n";
     
     private double spacing = 3;
 
     public TitleBar() {
 
         setManaged(false);
-        
-        String css = TitleBar.class.getResource(DEFAULT_STYLE).toExternalForm();
 
         setSpacing(8);
-        getStyleClass().setAll(DEFAULT_STYLE_CLASS);
-        setStyle(css);
+        setStyle(CSS_STYLE);
         label.setTextAlignment(TextAlignment.CENTER);
-        label.setStyle(css);
+        label.setStyle("-fx-stroke: rgba(255,255,255,50); -fx-fill: rgba(255,255,255,50);");
 
         leftIconPane = new IconPane();
         rightIconPane = new IconPane();
