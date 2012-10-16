@@ -310,7 +310,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 final double scaleX = n.localToSceneTransformProperty().getValue().getMxx();
                 final double scaleY = n.localToSceneTransformProperty().getValue().getMyy();
 
-                final double border = 10 * scaleX;
+                final double border = 5 * scaleX;
 
                 double diffMinX = Math.abs(n.getBoundsInLocal().getMinX() - t.getX() + getInsets().getLeft());
                 double diffMinY = Math.abs(n.getBoundsInLocal().getMinY() - t.getY() + getInsets().getTop());
