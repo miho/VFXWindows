@@ -623,6 +623,8 @@ class TitleBar extends HBox {
 
     private static class IconPane extends Pane {
 
+        private double spacing = 2;
+
         public IconPane() {
             setManaged(false);
             //
@@ -640,7 +642,7 @@ class TitleBar extends HBox {
 
             for (Node n : getManagedChildren()) {
 
-                double x = width * count;
+                double x = (width + spacing) * count;
 
                 n.resizeRelocate(x, 0, width, height);
 
@@ -650,7 +652,8 @@ class TitleBar extends HBox {
 
         @Override
         protected double computeMinWidth(double h) {
-            return getHeight() * getChildren().size();
+            return getHeight() * getChildren().size()
+                    + spacing * (getChildren().size() - 1);
         }
 
         @Override
