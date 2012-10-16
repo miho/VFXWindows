@@ -46,7 +46,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     private boolean RESIZE_LEFT;
     private boolean RESIZE_BOTTOM;
     private boolean RESIZE_RIGHT;
-    private TitleBar titleBar = new TitleBar();
+    private TitleBar titleBar;
     private Window control;
     private Pane root = new Pane();
     private double contentScale = 1.0;
@@ -54,6 +54,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     public DefaultWindowSkin(Window w) {
         super(w, new BehaviorBase<Window>(w));
         this.control = w;
+        titleBar = new TitleBar(control);
         titleBar.setTitle("");
         titleBar.setPrefHeight(30);
         init();
@@ -275,7 +276,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double newWidth = xDiff;
 
-                        if (newWidth < control.maxWidth(0) 
+                        if (newWidth < control.maxWidth(0)
                                 && newWidth > control.minWidth(0)) {
                             control.setPrefWidth(newWidth);
                         }
@@ -531,30 +532,23 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
 class TitleBar extends HBox {
 
+    public static final String DEFAULT_STYLE_CLASS = "window-titlebar";
     private Pane leftIconPane;
     private Pane rightIconPane;
     private Text label = new Text();
-    public static final String CSS_STYLE =
-            "  -fx-glass-color: rgba(42, 42, 42, 0.9);\n"
-            + "  -fx-alignment: center;\n"
-            + "  -fx-font-size: 20;\n"
-            + "  -fx-background-color: linear-gradient(to bottom, derive(-fx-glass-color, 30%), -fx-glass-color);\n"
-            + "  -fx-border-color: derive(-fx-glass-color, -60%);\n"
-            + "  -fx-border-width: 2;\n"
-            + "  -fx-background-insets: 1;\n"
-            + "  -fx-border-radius: 3;\n"
-            + "  -fx-background-radius: 3;\n";
-    
     private double spacing = 3;
 
-    public TitleBar() {
+    public TitleBar(Window w) {
 
         setManaged(false);
 
+        getStylesheets().setAll(w.getStylesheets());
+        getStyleClass().setAll(DEFAULT_STYLE_CLASS);
+
         setSpacing(8);
-        setStyle(CSS_STYLE);
+
         label.setTextAlignment(TextAlignment.CENTER);
-        label.setStyle("-fx-stroke: rgba(255,255,255,50); -fx-fill: rgba(255,255,255,50);");
+        label.getStyleClass().setAll(DEFAULT_STYLE_CLASS);
 
         leftIconPane = new IconPane();
         rightIconPane = new IconPane();
@@ -606,7 +600,7 @@ class TitleBar extends HBox {
                 + getInsets().getLeft()
                 + getInsets().getRight());
 
-        return result + spacing*2;
+        return result + spacing * 2;
     }
 
     @Override
