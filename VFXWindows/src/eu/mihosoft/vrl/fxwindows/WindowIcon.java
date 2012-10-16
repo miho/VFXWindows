@@ -17,8 +17,7 @@ import javafx.scene.control.Control;
 public class WindowIcon extends Control {
 
     public static final String DEFAULT_STYLE_CLASS = "window-icon";
-    public static final String DEFAULT_STYLE =
-            "/eu/mihosoft/vrl/fxwindows/default.css";
+
     private ObjectProperty<EventHandler<ActionEvent>> onActionProperty = 
             new SimpleObjectProperty<EventHandler<ActionEvent>>();
     

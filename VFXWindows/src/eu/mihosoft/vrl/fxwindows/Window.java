@@ -22,8 +22,7 @@ import javafx.scene.layout.StackPane;
 public class Window extends Control {
 
     public static final String DEFAULT_STYLE_CLASS = "window";
-    public static final String DEFAULT_STYLE =
-            "/eu/mihosoft/vrl/fxwindows/default.css";
+
     private boolean moveToFront = true;
     private StringProperty titleProperty = new SimpleStringProperty("Title");
     private Property<Pane> contentPaneProperty =
@@ -50,7 +49,7 @@ public class Window extends Control {
 
     @Override
     protected String getUserAgentStylesheet() {
-        return DEFAULT_STYLE;
+        return Constants.DEFAULT_STYLE;
     }
 
     /**
