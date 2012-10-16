@@ -56,7 +56,6 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         this.control = w;
         titleBar = new TitleBar(control);
         titleBar.setTitle("");
-        titleBar.setPrefHeight(30);
         init();
     }
 
