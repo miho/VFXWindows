@@ -11,6 +11,8 @@ import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -19,6 +21,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -46,53 +49,9 @@ public class VFXWindows extends Application {
 
                 final Window node = createWindowHierarchy(
                         new Window("W (" + (x + 1) + "," + (y + 1) + ")"), numLevels);
-
-                WindowIcon leftIcon = new WindowIcon();
-                leftIcon.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent t) {
-
-                        ScaleTransition st = new ScaleTransition();
-                        st.setNode(node);
-                        st.setFromX(1);
-                        st.setFromY(1);
-                        st.setToX(0);
-                        st.setToY(0);
-                        st.setDuration(Duration.seconds(0.2));
-                        st.statusProperty().addListener(new ChangeListener<Status>() {
-                            @Override
-                            public void changed(ObservableValue<? extends Status> observableValue,
-                                    Status oldValue, Status newValue) {
-                                if (newValue == Status.STOPPED) {
-                                    VFXNodeUtils.removeFromParent(node);
-                                }
-                            }
-                        });
-                        st.play();
-                    }
-                });
                 
-                node.getLeftIcons().add(new WindowIcon());
-
-                node.getLeftIcons().add(leftIcon);
-
-                WindowIcon rightIcon = new WindowIcon();
-                rightIcon.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent t) {
-
-                        RotateTransition rotationY = new RotateTransition();
-                        rotationY.setAxis(Rotate.Z_AXIS);
-                        rotationY.setDuration(Duration.seconds(1));
-                        rotationY.setByAngle(360);
-                        rotationY.setNode(node);
-//                        rotationY.setAutoReverse(true);
-                        rotationY.setCycleCount(1);
-                        rotationY.play();
-                    }
-                });
-
-                node.getRightIcons().add(rightIcon);
+                node.getLeftIcons().add(new CloseIcon(node));
+                node.getRightIcons().add(new RotateIcon(node));
 
                 node.setPrefSize(200, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
