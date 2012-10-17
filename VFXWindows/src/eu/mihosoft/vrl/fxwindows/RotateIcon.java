@@ -31,8 +31,8 @@ public class RotateIcon extends WindowIcon {
             public void handle(ActionEvent t) {
 
                 RotateTransition rotationY = new RotateTransition();
-                rotationY.setAxis(Rotate.Z_AXIS);
-                rotationY.setDuration(Duration.seconds(1));
+                rotationY.setAxis(Rotate.Y_AXIS);
+                rotationY.setDuration(Duration.seconds(10));
                 rotationY.setByAngle(-360);
                 rotationY.setNode(w);
                 rotationY.setCycleCount(1);
