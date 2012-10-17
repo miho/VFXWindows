@@ -17,12 +17,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.transform.Rotate;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -49,11 +51,10 @@ public class VFXWindows extends Application {
 
                 final Window node = createWindowHierarchy(
                         new Window("W (" + (x + 1) + "," + (y + 1) + ")"), numLevels);
-                
+
                 node.getLeftIcons().add(new CloseIcon(node));
                 node.getRightIcons().add(new RotateIcon(node));
                 node.getRightIcons().add(new MinimizeIcon(node));
-                
 
                 node.setPrefSize(200, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -139,6 +140,7 @@ public class VFXWindows extends Application {
         if (c == max) {
             Button btn = new Button("Test Button");
             btn.setMinWidth(400);
+
             scaledContent.getContentPane().getChildren().add(btn);
         }
 

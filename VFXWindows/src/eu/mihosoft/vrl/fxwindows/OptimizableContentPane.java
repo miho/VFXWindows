@@ -4,7 +4,9 @@
  */
 package eu.mihosoft.vrl.fxwindows;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -20,6 +22,8 @@ public class OptimizableContentPane extends StackPane {
 
     private OptimizationRule optimizationRule;
     private Transform transform;
+    private boolean optimizing = false;
+    private boolean visibility = true;
 
     public OptimizableContentPane() {
         this.optimizationRule = new OptimizationRuleImpl();
@@ -38,9 +42,24 @@ public class OptimizableContentPane extends StackPane {
                 updateOptimizationRule();
             }
         });
+
+        visibleProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) {
+                if (!optimizing) {
+                    visibility = newValue;
+                }
+            }
+        });
     }
 
     private synchronized void updateOptimizationRule() {
+
+        if (!visibility) {
+            return;
+        }
+
+        optimizing = true;
 
         if (transform == null) {
             transform = OptimizableContentPane.this.localToSceneTransformProperty().get();
@@ -51,6 +70,8 @@ public class OptimizableContentPane extends StackPane {
         if (isVisible() != visible) {
             setVisible(visible);
         }
+
+        optimizing = false;
     }
 
     /**

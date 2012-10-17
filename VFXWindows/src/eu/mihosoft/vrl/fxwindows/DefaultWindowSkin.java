@@ -11,23 +11,16 @@ import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
@@ -132,7 +125,12 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
         control.minimizedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
-            public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) {
+            public void changed(ObservableValue<? extends Boolean> ov, final Boolean oldValue, final Boolean newValue) {
+
+                // TODO is this necessary or does the property handle this already?
+                if (oldValue == newValue) {
+                    return;
+                }
 
                 boolean storeOldHeight = minimizeTimeLine == null;
 
@@ -155,22 +153,29 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                 minimizeTimeLine = new Timeline(
                         new KeyFrame(Duration.ZERO,
-                        new KeyValue(control.prefHeightProperty(), control.getPrefHeight())),
-                        new KeyFrame(Duration.seconds(0.5),
+                        new KeyValue(control.prefHeightProperty(), oldHeight)),
+                        new KeyFrame(Duration.seconds(0.2),
                         new KeyValue(control.prefHeightProperty(), newHeight)));
 
-                minimizeTimeLine.statusProperty().addListener(new ChangeListener<Animation.Status>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Status> ov, Status oldStatus, Status newStatus) {
-                        if (newStatus == Status.STOPPED) {
-                            minimizeTimeLine = null;
-                        }
-                    }
-                });
+                minimizeTimeLine.statusProperty().addListener(
+                        new ChangeListener<Animation.Status>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Status> ov, Status oldStatus, Status newStatus) {
+
+                                if (newStatus == Status.STOPPED) {
+                                    minimizeTimeLine = null;
+                                    if (newValue) {
+                                        control.getContentPane().setVisible(false);
+                                    }
+                                }
+                            }
+                        });
 
                 minimizeTimeLine.play();
             }
         });
+
+        control.prefHeightProperty().addListener(new MinimizeHeightListener(control, titleBar));
 
         initMouseEventHandlers();
 
@@ -353,6 +358,14 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
             public void handle(MouseEvent t) {
 
                 if (control.isMinimized()) {
+
+                    RESIZE_TOP = false;
+                    RESIZE_LEFT = false;
+                    RESIZE_BOTTOM = false;
+                    RESIZE_RIGHT = false;
+
+                    resizeMode = ResizeMode.NONE;
+
                     return;
                 }
 
@@ -435,12 +448,13 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 //                }
 //
 //                double scaleValue =
-//                        control.getScaleTransform().getY() + event.getDeltaY() * getScaleIncrement();
+//                        control.getScaleY() + event.getDeltaY() * getScaleIncrement();
 //
 //                scaleValue = Math.max(scaleValue, getMinScale());
 //                scaleValue = Math.min(scaleValue, getMaxScale());
 //
-//                control.scale(scaleValue);
+//                control.setScaleX(scaleValue);
+//                control.setScaleY(scaleValue);
 //
 //                event.consume();
 //            }
@@ -574,12 +588,41 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     protected double computeMinHeight(double d) {
 
         double result = root.minHeight(d);
-        result = Math.max(result,
-                titleBar.prefHeight(d)
-                + control.getContentPane().minHeight(d)
-                + getInsets().getBottom());
+
+        double minHeight = titleBar.prefHeight(d);
+
+        if (!control.isMinimized() && control.getContentPane().isVisible()) {
+            minHeight += control.getContentPane().minHeight(d)
+                    + getInsets().getBottom();
+        }
+
+        result = Math.max(result, minHeight);
 
         return result;
+    }
+
+    static class MinimizeHeightListener implements ChangeListener<Number> {
+
+        private Window control;
+        private TitleBar titleBar;
+
+        public MinimizeHeightListener(Window control, TitleBar titleBar) {
+            this.control = control;
+            this.titleBar = titleBar;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Number> ov, Number t, Number t1) {
+            if (control.isMinimized()
+                    && control.getPrefHeight()
+                    < titleBar.minHeight(0) + control.getContentPane().minHeight(0)) {
+                control.getContentPane().setVisible(false);
+            } else if (!control.isMinimized()
+                    && control.getPrefHeight()
+                    > titleBar.minHeight(0) + control.getContentPane().minHeight(0)) {
+                control.getContentPane().setVisible(true);
+            }
+        }
     }
 }
 
