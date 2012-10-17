@@ -118,7 +118,7 @@ public class Window extends Control {
         minimizeProperty.set(v);
     }
     
-    public boolean getMinimized() {
+    public boolean isMinimized() {
         return minimizeProperty.get();
     }
     

@@ -30,7 +30,7 @@ public class MinimizeIcon extends WindowIcon {
             @Override
             public void handle(ActionEvent t) {
 
-               w.setMinimized(!w.getMinimized());
+               w.setMinimized(!w.isMinimized());
             }
         });
     }

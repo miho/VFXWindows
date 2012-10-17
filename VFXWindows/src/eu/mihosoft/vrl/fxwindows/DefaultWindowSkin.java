@@ -352,6 +352,10 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
             @Override
             public void handle(MouseEvent t) {
 
+                if (control.isMinimized()) {
+                    return;
+                }
+
                 final Node n = control;
 
                 final double parentScaleX = n.getParent().localToSceneTransformProperty().getValue().getMxx();
