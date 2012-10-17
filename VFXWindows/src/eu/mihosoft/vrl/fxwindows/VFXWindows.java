@@ -20,6 +20,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -40,7 +41,13 @@ public class VFXWindows extends Application {
 
         // we use a default pane without layout such as HBox, VBox etc.
         final Pane root = new Pane();
-        final Scene scene = new Scene(root, 1024, 768, Color.rgb(160, 160, 160));
+        
+        final ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(root);
+        
+        scrollPane.setStyle("-fx-background-color: rgb(160, 160, 160);");
+        
+        final Scene scene = new Scene(scrollPane, 1024, 768);
 
         final int n = 4; // number of nodes to add
         final double spacing = 30; // spacing between nodes

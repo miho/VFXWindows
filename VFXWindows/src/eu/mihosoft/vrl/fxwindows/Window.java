@@ -10,8 +10,11 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.scene.control.Control;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -46,6 +49,24 @@ public class Window extends Control {
 
         getStyleClass().setAll(DEFAULT_STYLE_CLASS);
         setContentPane(new StackPane());
+
+        boundsInParentProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> ov, Bounds t, Bounds t1) {
+
+                if (t1.equals(t)) {
+                    return;
+                }
+
+                getParent().requestLayout();
+
+                double x = Math.max(0, getLayoutX());
+                double y = Math.max(0, getLayoutY());
+
+                setLayoutX(x);
+                setLayoutY(y);
+            }
+        });
     }
 
     @Override
@@ -117,11 +138,11 @@ public class Window extends Control {
     public void setMinimized(Boolean v) {
         minimizeProperty.set(v);
     }
-    
+
     public boolean isMinimized() {
         return minimizeProperty.get();
     }
-    
+
     public BooleanProperty minimizedProperty() {
         return minimizeProperty;
     }
