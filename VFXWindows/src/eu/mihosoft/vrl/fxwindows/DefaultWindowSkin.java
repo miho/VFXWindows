@@ -127,7 +127,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
             @Override
             public void changed(ObservableValue<? extends Boolean> ov, final Boolean oldValue, final Boolean newValue) {
 
-                // TODO is this necessary or does the property handle this already?
+                // TODO is this necessary or does the property handle this 
+                // optimization already?
                 if (oldValue == newValue) {
                     return;
                 }
@@ -142,7 +143,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 double newHeight;
 
                 if (newValue) {
-                    newHeight = control.minHeight(0);
+                    newHeight = titleBar.getHeight();
                 } else {
                     newHeight = oldHeight;
                 }
@@ -317,7 +318,8 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double newHeight = yDiff;
 
-                        if (newHeight < control.maxHeight(0)) {
+                        if (newHeight < control.maxHeight(0)
+                                && newHeight > control.minHeight(0)) {
                             control.setPrefHeight(newHeight);
                         }
                     }
@@ -617,10 +619,12 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                     && control.getPrefHeight()
                     < titleBar.minHeight(0) + control.getContentPane().minHeight(0)) {
                 control.getContentPane().setVisible(false);
+//                System.out.println("v: false");
             } else if (!control.isMinimized()
                     && control.getPrefHeight()
-                    > titleBar.minHeight(0) + control.getContentPane().minHeight(0)) {
+                    >= titleBar.minHeight(0) + control.getContentPane().minHeight(0)) {
                 control.getContentPane().setVisible(true);
+//                System.out.println("v: true");
             }
         }
     }
