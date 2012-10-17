@@ -18,7 +18,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
@@ -67,8 +66,6 @@ public class VFXWindows extends Application {
                 root.getContentPane().getChildren().add(node);
             }
         }
-        
-        scene.setCamera(new PerspectiveCamera());
 
         // finally, show the stage
         primaryStage.setTitle("VFXWindow Demo");
