@@ -6,6 +6,8 @@ package eu.mihosoft.vrl.fxwindows;
 
 import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.skin.SkinBase;
+import javafx.animation.Animation;
+import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -154,8 +156,17 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 minimizeTimeLine = new Timeline(
                         new KeyFrame(Duration.ZERO,
                         new KeyValue(control.prefHeightProperty(), control.getPrefHeight())),
-                        new KeyFrame(Duration.seconds(1),
+                        new KeyFrame(Duration.seconds(0.5),
                         new KeyValue(control.prefHeightProperty(), newHeight)));
+
+                minimizeTimeLine.statusProperty().addListener(new ChangeListener<Animation.Status>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Status> ov, Status oldStatus, Status newStatus) {
+                        if (newStatus == Status.STOPPED) {
+                            minimizeTimeLine = null;
+                        }
+                    }
+                });
 
                 minimizeTimeLine.play();
             }
