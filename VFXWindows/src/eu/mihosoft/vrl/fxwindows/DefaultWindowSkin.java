@@ -55,6 +55,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     private Pane root = new Pane();
     private double contentScale = 1.0;
     private double oldHeight;
+    private Timeline minimizeTimeLine;
 
     public DefaultWindowSkin(Window w) {
         super(w, new BehaviorBase<Window>(w));
@@ -130,7 +131,13 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         control.minimizedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) {
-                
+
+                boolean storeOldHeight = minimizeTimeLine == null;
+
+                if (minimizeTimeLine != null) {
+                    minimizeTimeLine.stop();
+                    minimizeTimeLine = null;
+                }
 
                 double newHeight;
 
@@ -140,15 +147,17 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                     newHeight = oldHeight;
                 }
 
-                oldHeight = control.getPrefHeight();
+                if (storeOldHeight) {
+                    oldHeight = control.getPrefHeight();
+                }
 
-                Timeline timeLine = new Timeline(
+                minimizeTimeLine = new Timeline(
                         new KeyFrame(Duration.ZERO,
                         new KeyValue(control.prefHeightProperty(), control.getPrefHeight())),
                         new KeyFrame(Duration.seconds(1),
                         new KeyValue(control.prefHeightProperty(), newHeight)));
 
-                timeLine.play();
+                minimizeTimeLine.play();
             }
         });
 

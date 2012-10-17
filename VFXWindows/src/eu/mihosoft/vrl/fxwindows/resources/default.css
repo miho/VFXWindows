@@ -43,6 +43,14 @@
     -fx-border-insets: 1;
 }
 
+.window-minimize-icon {
+    -fx-skin: "eu.mihosoft.vrl.fxwindows.DefaultWindowIconSkin";
+    -fx-border-color: rgb(255,255,255);
+    -fx-shape: "m 84.388275,210.34884 -47.71427,-0.28572 m 70.999995,0.14286 c 0,26.03628 -21.106585,47.14286 -47.142865,47.14286 -26.03628,0 -47.14285,-21.10658 -47.14285,-47.14286 0,-26.03628 21.10657,-47.14285 47.14285,-47.14285 26.03628,0 47.142865,21.10657 47.142865,47.14285 z";
+    -fx-border-width: 2;
+    -fx-border-insets: 1;
+}
+
 
 .window-titlebar {
     -fx-glass-color: rgba(42, 42, 42, 0.9);
