@@ -39,8 +39,9 @@
     -fx-skin: "eu.mihosoft.vrl.fxwindows.DefaultWindowIconSkin";
     -fx-border-color: rgb(255,255,255);
     -fx-shape: "m 238.03158,30.844083 -34.78125,9.875 0,0.25 34.78125,13.4375 0,-23.5625 z m -7.85745,10.984542 c 27.30327,0 49.43694,22.133672 49.43694,49.43694 0,27.303265 -22.13367,49.436935 -49.43694,49.436935 -27.30327,0 -49.43694,-22.13367 -49.43694,-49.436937 0,0 0,-10e-7 0,-10e-7";
-    -fx-border-width: 2;
+    -fx-border-width: 2.0;
     -fx-border-insets: 1;
+    /*-fx-background-color: rgb(255,255,255);*/
 }
 
 .window-minimize-icon {
