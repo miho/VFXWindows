@@ -39,7 +39,7 @@ public class VFXWindows extends Application {
     public void start(Stage primaryStage) {
 
         // we use a default pane without layout such as HBox, VBox etc.
-        final ScalableContentPane root = new ScalableContentPane();
+        final Pane root = new Pane();
         final Scene scene = new Scene(root, 1024, 768, Color.rgb(160, 160, 160));
 
         final int n = 4; // number of nodes to add
@@ -63,7 +63,7 @@ public class VFXWindows extends Application {
                 node.setLayoutX(spacing * (x + 1) + node.getPrefWidth() * x);
                 node.setLayoutY(spacing + (spacing + node.getPrefHeight()) * y);
                 // add the node to the root pane 
-                root.getContentPane().getChildren().add(node);
+                root.getChildren().add(node);
             }
         }
 

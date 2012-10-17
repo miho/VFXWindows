@@ -132,7 +132,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                     return;
                 }
 
-                boolean storeOldHeight = minimizeTimeLine == null;
+                boolean storeOldHeight = minimizeTimeLine == null && newValue;
 
                 if (minimizeTimeLine != null) {
                     minimizeTimeLine.stop();
@@ -153,7 +153,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                 minimizeTimeLine = new Timeline(
                         new KeyFrame(Duration.ZERO,
-                        new KeyValue(control.prefHeightProperty(), oldHeight)),
+                        new KeyValue(control.prefHeightProperty(), control.getPrefHeight())),
                         new KeyFrame(Duration.seconds(0.2),
                         new KeyValue(control.prefHeightProperty(), newHeight)));
 
