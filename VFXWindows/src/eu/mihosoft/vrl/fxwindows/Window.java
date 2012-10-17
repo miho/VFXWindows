@@ -4,13 +4,14 @@
  */
 package eu.mihosoft.vrl.fxwindows;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.scene.control.Control;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -22,9 +23,9 @@ import javafx.scene.layout.StackPane;
 public class Window extends Control {
 
     public static final String DEFAULT_STYLE_CLASS = "window";
-
     private boolean moveToFront = true;
     private StringProperty titleProperty = new SimpleStringProperty("Title");
+    private BooleanProperty minimizeProperty = new SimpleBooleanProperty();
     private Property<Pane> contentPaneProperty =
             new SimpleObjectProperty<Pane>();
     private ObservableList<WindowIcon> leftIcons =
@@ -111,5 +112,17 @@ public class Window extends Control {
      */
     public ObservableList<WindowIcon> getRightIcons() {
         return rightIcons;
+    }
+
+    public void setMinimized(Boolean v) {
+        minimizeProperty.set(v);
+    }
+    
+    public boolean getMinimized() {
+        return minimizeProperty.get();
+    }
+    
+    public BooleanProperty minimizedProperty() {
+        return minimizeProperty;
     }
 }

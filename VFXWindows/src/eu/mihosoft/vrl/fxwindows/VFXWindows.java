@@ -52,6 +52,8 @@ public class VFXWindows extends Application {
                 
                 node.getLeftIcons().add(new CloseIcon(node));
                 node.getRightIcons().add(new RotateIcon(node));
+                node.getRightIcons().add(new MinimizeIcon(node));
+                
 
                 node.setPrefSize(200, 120);
                 node.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);

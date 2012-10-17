@@ -6,6 +6,9 @@ package eu.mihosoft.vrl.fxwindows;
 
 import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.skin.SkinBase;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,6 +28,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 
 /**
  *
@@ -50,6 +54,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     private Window control;
     private Pane root = new Pane();
     private double contentScale = 1.0;
+    private double oldHeight;
 
     public DefaultWindowSkin(Window w) {
         super(w, new BehaviorBase<Window>(w));
@@ -119,6 +124,31 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                         }
                     }
                 }
+            }
+        });
+
+        control.minimizedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) {
+                
+
+                double newHeight;
+
+                if (newValue) {
+                    newHeight = control.minHeight(0);
+                } else {
+                    newHeight = oldHeight;
+                }
+
+                oldHeight = control.getPrefHeight();
+
+                Timeline timeLine = new Timeline(
+                        new KeyFrame(Duration.ZERO,
+                        new KeyValue(control.prefHeightProperty(), control.getPrefHeight())),
+                        new KeyFrame(Duration.seconds(1),
+                        new KeyValue(control.prefHeightProperty(), newHeight)));
+
+                timeLine.play();
             }
         });
 
