@@ -222,7 +222,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 titleBar.getLabel().getStyleClass().setAll(t1);
             }
         });
-        
+
         titleBar.getStylesheets().setAll(control.getStylesheets());
 
         control.getStylesheets().addListener(new ListChangeListener<String>() {
@@ -368,8 +368,10 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double newHeight = yDiff;
 
-                        if (newHeight < control.maxHeight(0)
-                                && newHeight > control.minHeight(0)) {
+                        newHeight = Math.max(
+                                newHeight, control.minHeight(0));
+
+                        if (newHeight < control.maxHeight(0)) {
                             control.setPrefHeight(newHeight);
                         }
                     }
@@ -382,8 +384,10 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
 
                         double newWidth = xDiff;
 
-                        if (newWidth < control.maxWidth(0)
-                                && newWidth > control.minWidth(0)) {
+                        newWidth = Math.max(
+                                newWidth, control.minWidth(0));
+
+                        if (newWidth < control.maxWidth(0)) {
                             control.setPrefWidth(newWidth);
                         }
                     }
@@ -679,7 +683,6 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
         }
     }
 }
-
 
 class TitleBar extends HBox {
 
