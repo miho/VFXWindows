@@ -16,6 +16,7 @@
     -fx-background-insets: 1;
     -fx-border-radius: 3;
     -fx-background-radius: 3;
+    -fx-font-size: 18;
     /*-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.65), 100, 0.5, 0.0, 0.0);*/
 
     /*-fx-padding: -2;*/
@@ -56,7 +57,6 @@
 .window-titlebar {
     -fx-glass-color: rgba(42, 42, 42, 0.9);
     -fx-alignment: center;
-    -fx-font-size: 18;
     -fx-background-color: linear-gradient(to bottom, derive(-fx-glass-color, 30%), -fx-glass-color);
     -fx-border-color: derive(-fx-glass-color, -60%);
     -fx-border-width: 2;
