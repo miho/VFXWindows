@@ -35,6 +35,8 @@ public class Window extends Control {
             FXCollections.observableArrayList();
     private ObservableList<WindowIcon> rightIcons =
             FXCollections.observableArrayList();
+    
+    private StringProperty titleBarStyleClassProperty = new SimpleStringProperty("window-titlebar");
 
     public Window() {
         init();
@@ -145,5 +147,17 @@ public class Window extends Control {
 
     public BooleanProperty minimizedProperty() {
         return minimizeProperty;
+    }
+    
+    public StringProperty titleBarStyleClassProperty() {
+        return titleBarStyleClassProperty;
+    }
+    
+    public void setTitleBarStyleClass(String name) {
+        titleBarStyleClassProperty.set(name);
+    }
+    
+    public String getTitleBarStyleClass() {
+        return titleBarStyleClassProperty.get();
     }
 }

@@ -14,6 +14,7 @@ import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ListChangeListener.Change;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
@@ -201,6 +202,55 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 newValue.setManaged(false);
             }
         });
+
+        titleBar.setStyle(control.getStyle());
+
+        control.styleProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
+                titleBar.setStyle(t1);
+            }
+        });
+
+        titleBar.getStyleClass().setAll(control.getTitleBarStyleClass());
+        titleBar.getLabel().getStyleClass().setAll(control.getTitleBarStyleClass());
+
+        control.titleBarStyleClassProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
+                titleBar.getStyleClass().setAll(t1);
+                titleBar.getLabel().getStyleClass().setAll(t1);
+            }
+        });
+        
+        titleBar.getStylesheets().setAll(control.getStylesheets());
+
+        control.getStylesheets().addListener(new ListChangeListener<String>() {
+            @Override
+            public void onChanged(Change<? extends String> change) {
+                while (change.next()) {
+                    if (change.wasPermutated()) {
+                        for (int i = change.getFrom(); i < change.getTo(); ++i) {
+                            //permutate
+                        }
+                    } else if (change.wasUpdated()) {
+                        //update item
+                    } else {
+                        if (change.wasRemoved()) {
+                            for (String i : change.getRemoved()) {
+                                titleBar.getStylesheets().remove(i);
+                            }
+                        } else if (change.wasAdded()) {
+                            for (String i : change.getAddedSubList()) {
+                                titleBar.getStylesheets().add(i);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
     }
 
     private void initMouseEventHandlers() {
@@ -630,6 +680,7 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
     }
 }
 
+
 class TitleBar extends HBox {
 
     public static final String DEFAULT_STYLE_CLASS = "window-titlebar";
@@ -662,11 +713,11 @@ class TitleBar extends HBox {
     }
 
     public void setTitle(String title) {
-        label.setText(title);
+        getLabel().setText(title);
     }
 
     public String getTitle() {
-        return label.getText();
+        return getLabel().getText();
     }
 
     public void addLeftIcon(Node n) {
@@ -696,7 +747,7 @@ class TitleBar extends HBox {
 
         result = Math.max(result,
                 iconWidth
-                + label.prefWidth(h)
+                + getLabel().prefWidth(h)
                 + getInsets().getLeft()
                 + getInsets().getRight());
 
@@ -720,6 +771,13 @@ class TitleBar extends HBox {
                 getHeight() - getInsets().getTop() - getInsets().getBottom());
         rightIconPane.relocate(getWidth() - rightIconPane.getWidth() - getInsets().getRight(),
                 getInsets().getTop());
+    }
+
+    /**
+     * @return the label
+     */
+    public Text getLabel() {
+        return label;
     }
 
     private static class IconPane extends Pane {
