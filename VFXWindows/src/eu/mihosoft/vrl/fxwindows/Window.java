@@ -5,8 +5,10 @@
 package eu.mihosoft.vrl.fxwindows;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -35,6 +37,7 @@ public class Window extends Control {
             FXCollections.observableArrayList();
     private ObservableList<WindowIcon> rightIcons =
             FXCollections.observableArrayList();
+    private DoubleProperty resizableBorderWidthProperty = new SimpleDoubleProperty(5);
     
     private StringProperty titleBarStyleClassProperty = new SimpleStringProperty("window-titlebar");
 
@@ -159,5 +162,17 @@ public class Window extends Control {
     
     public String getTitleBarStyleClass() {
         return titleBarStyleClassProperty.get();
+    }
+    
+    public DoubleProperty resizableBorderWidthProperty() {
+        return resizableBorderWidthProperty;
+    }
+    
+    public void setResizableBorderWidth(double v) {
+        resizableBorderWidthProperty.set(v);
+    }
+    
+    public double getResizableBorderWidth() {
+        return resizableBorderWidthProperty.get();
     }
 }
