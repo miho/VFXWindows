@@ -693,18 +693,11 @@ class TitleBar extends HBox {
     private Text label = new Text();
     private double iconSpacing = 3;
     Window control;
-    private double originalTextWidth;
+    // estimated size of "...",
+    // is there a way to find out text dimension without rendering it
+    private double offset = 40;
 
     public TitleBar(Window w) {
-
-//        label.setPrefWidth(30);
-//        label.setPrefHeight(30);
-//
-//        label.setMinWidth(30);
-//        label.setMinHeight(30);
-
-//        label.setStyle("-fx-border-color: rgb(255,0,0);");
-//        label.setTextFill(Color.WHITE);
 
         this.control = w;
 
@@ -727,26 +720,39 @@ class TitleBar extends HBox {
 //        getChildren().add(VFXLayoutUtil.createHBoxFiller());
         getChildren().add(rightIconPane);
 
-        control.widthProperty().addListener(new ChangeListener<Number>() {
+
+        control.boundsInParentProperty().addListener(new ChangeListener<Bounds>() {
             @Override
-            public void changed(ObservableValue<? extends Number> ov, Number t, Number t1) {
-                if (originalTextWidth + leftIconPane.getWidth() + rightIconPane.getWidth() < getWidth()) {
-                    getLabel().setText(control.getTitle());
+            public void changed(ObservableValue<? extends Bounds> ov, Bounds t, Bounds t1) {
+
+                if (control.getTitle() == null
+                        || getLabel().getText() == null
+                        || getLabel().getText().isEmpty()) {
+                    return;
+                }
+
+                double maxIconWidth = Math.max(
+                        leftIconPane.getWidth(), rightIconPane.getWidth());
+
+                if (!control.getTitle().equals(getLabel().getText())) {
+                    if (getLabel().getBoundsInParent().getWidth()
+                            + maxIconWidth * 2 + offset < getWidth()) {
+                        getLabel().setText(control.getTitle());
+                    }
+                } else if (!"...".equals(getLabel().getText())) {
+                    if (getLabel().getBoundsInParent().getWidth()
+                            + maxIconWidth * 2 + offset >= getWidth()) {
+                        getLabel().setText("...");
+                    }
                 }
             }
         });
+
     }
 
     public void setTitle(String title) {
 
         getLabel().setText(title);
-        
-        originalTextWidth = getLabel().getBoundsInParent().getWidth();
-
-        if (getLabel().prefWidth(getLabel().getBoundsInLocal().getHeight())
-                > getWidth()) {
-            getLabel().setText("...");
-        }
     }
 
     public String getTitle() {
@@ -780,11 +786,11 @@ class TitleBar extends HBox {
 
         result = Math.max(result,
                 iconWidth
-                + getLabel().prefWidth(h)
+                //                + getLabel().prefWidth(h)
                 + getInsets().getLeft()
                 + getInsets().getRight());
 
-        return result + iconSpacing * 2;
+        return result + iconSpacing * 2 + offset;
     }
 
     @Override
