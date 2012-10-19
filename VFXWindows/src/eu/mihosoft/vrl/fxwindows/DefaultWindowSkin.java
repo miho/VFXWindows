@@ -435,11 +435,11 @@ public class DefaultWindowSkin extends SkinBase<Window, BehaviorBase<Window>> {
                 final double scaleY = n.localToSceneTransformProperty().getValue().getMyy();
 
                 final double border = control.getResizableBorderWidth() * scaleX;
-
-                double diffMinX = Math.abs(n.getBoundsInLocal().getMinX() - t.getX() + getInsets().getLeft());
-                double diffMinY = Math.abs(n.getBoundsInLocal().getMinY() - t.getY() + getInsets().getTop());
-                double diffMaxX = Math.abs(n.getBoundsInLocal().getMaxX() - t.getX() - getInsets().getRight());
-                double diffMaxY = Math.abs(n.getBoundsInLocal().getMaxY() - t.getY() - getInsets().getBottom());
+                
+                double diffMinX = Math.abs(n.getLayoutBounds().getMinX() - t.getX() + getInsets().getLeft());
+                double diffMinY = Math.abs(n.getLayoutBounds().getMinY() - t.getY() + getInsets().getTop());
+                double diffMaxX = Math.abs(n.getLayoutBounds().getMaxX() - t.getX() - getInsets().getRight());
+                double diffMaxY = Math.abs(n.getLayoutBounds().getMaxY() - t.getY() - getInsets().getBottom());
 
                 boolean left = diffMinX * scaleX < Math.max(border, getInsets().getLeft() / 2 * scaleX);
                 boolean top = diffMinY * scaleY < Math.max(border, getInsets().getTop() / 2 * scaleY);
