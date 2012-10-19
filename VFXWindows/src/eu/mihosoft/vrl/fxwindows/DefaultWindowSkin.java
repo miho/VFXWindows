@@ -19,11 +19,12 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 /**
@@ -690,9 +691,22 @@ class TitleBar extends HBox {
     private Pane leftIconPane;
     private Pane rightIconPane;
     private Text label = new Text();
-    private double spacing = 3;
+    private double iconSpacing = 3;
+    Window control;
+    private double originalTextWidth;
 
     public TitleBar(Window w) {
+
+//        label.setPrefWidth(30);
+//        label.setPrefHeight(30);
+//
+//        label.setMinWidth(30);
+//        label.setMinHeight(30);
+
+//        label.setStyle("-fx-border-color: rgb(255,0,0);");
+//        label.setTextFill(Color.WHITE);
+
+        this.control = w;
 
         setManaged(false);
 
@@ -701,8 +715,8 @@ class TitleBar extends HBox {
 
         setSpacing(8);
 
-        label.setTextAlignment(TextAlignment.CENTER);
-        label.getStyleClass().setAll(DEFAULT_STYLE_CLASS);
+//        label.setTextAlignment(TextAlignment.CENTER);
+//        label.getStyleClass().setAll(DEFAULT_STYLE_CLASS);
 
         leftIconPane = new IconPane();
         rightIconPane = new IconPane();
@@ -713,10 +727,26 @@ class TitleBar extends HBox {
 //        getChildren().add(VFXLayoutUtil.createHBoxFiller());
         getChildren().add(rightIconPane);
 
+        control.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> ov, Number t, Number t1) {
+                if (originalTextWidth + leftIconPane.getWidth() + rightIconPane.getWidth() < getWidth()) {
+                    getLabel().setText(control.getTitle());
+                }
+            }
+        });
     }
 
     public void setTitle(String title) {
+
         getLabel().setText(title);
+        
+        originalTextWidth = getLabel().getBoundsInParent().getWidth();
+
+        if (getLabel().prefWidth(getLabel().getBoundsInLocal().getHeight())
+                > getWidth()) {
+            getLabel().setText("...");
+        }
     }
 
     public String getTitle() {
@@ -754,7 +784,7 @@ class TitleBar extends HBox {
                 + getInsets().getLeft()
                 + getInsets().getRight());
 
-        return result + spacing * 2;
+        return result + iconSpacing * 2;
     }
 
     @Override
