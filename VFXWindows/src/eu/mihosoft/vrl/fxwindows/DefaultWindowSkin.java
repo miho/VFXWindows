@@ -696,6 +696,7 @@ class TitleBar extends HBox {
     // estimated size of "...",
     // is there a way to find out text dimension without rendering it
     private double offset = 40;
+    private double originalTitleWidth;
 
     public TitleBar(Window w) {
 
@@ -735,12 +736,12 @@ class TitleBar extends HBox {
                         leftIconPane.getWidth(), rightIconPane.getWidth());
 
                 if (!control.getTitle().equals(getLabel().getText())) {
-                    if (getLabel().getBoundsInParent().getWidth()
+                    if (originalTitleWidth
                             + maxIconWidth * 2 + offset < getWidth()) {
                         getLabel().setText(control.getTitle());
                     }
                 } else if (!"...".equals(getLabel().getText())) {
-                    if (getLabel().getBoundsInParent().getWidth()
+                    if (originalTitleWidth
                             + maxIconWidth * 2 + offset >= getWidth()) {
                         getLabel().setText("...");
                     }
@@ -751,8 +752,17 @@ class TitleBar extends HBox {
     }
 
     public void setTitle(String title) {
-
         getLabel().setText(title);
+
+        originalTitleWidth = getLabel().getBoundsInParent().getWidth();
+
+        double maxIconWidth = Math.max(
+                        leftIconPane.getWidth(), rightIconPane.getWidth());
+        
+        if (originalTitleWidth
+                + maxIconWidth * 2 + offset >= getWidth()) {
+            getLabel().setText("...");
+        }
     }
 
     public String getTitle() {
