@@ -876,6 +876,7 @@ class TitleBar extends HBox {
     }
 }
 
+// TODO do we still need this enum?
 enum ResizeMode {
 
     NONE,

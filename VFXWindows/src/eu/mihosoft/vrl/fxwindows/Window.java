@@ -4,8 +4,11 @@
  */
 package eu.mihosoft.vrl.fxwindows;
 
+import javafx.animation.Animation;
+import javafx.animation.ScaleTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -16,10 +19,13 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.control.Control;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 /**
  * Window control. A window control is a window node as known from Swing, e.g
@@ -76,6 +82,18 @@ public class Window extends Control {
      */
     private StringProperty titleBarStyleClassProperty =
             new SimpleStringProperty("window-titlebar");
+    
+    /**
+     * 
+     */
+    private ObjectProperty<EventHandler<ActionEvent>> onCloseActionProperty =
+            new SimpleObjectProperty<EventHandler<ActionEvent>>();
+    
+    /**
+     * 
+     */
+    private ObjectProperty<EventHandler<ActionEvent>> onClosedActionProperty =
+            new SimpleObjectProperty<EventHandler<ActionEvent>>();
 
     /**
      * Constructor.
@@ -312,5 +330,79 @@ public class Window extends Control {
      */
     public double getResizableBorderWidth() {
         return resizableBorderWidthProperty.get();
+    }
+
+    public void close() {
+        ScaleTransition st = new ScaleTransition();
+        st.setNode(this);
+        st.setFromX(1);
+        st.setFromY(1);
+        st.setToX(0);
+        st.setToY(0);
+        st.setDuration(Duration.seconds(0.2));
+        st.statusProperty().addListener(new ChangeListener<Animation.Status>() {
+            @Override
+            public void changed(ObservableValue<? extends Animation.Status> observableValue,
+                    Animation.Status oldValue, Animation.Status newValue) {
+                
+                if (newValue == Animation.Status.STOPPED) {
+                    
+                    if (getOnCloseAction()!=null) {
+                        getOnCloseAction().handle(new ActionEvent(this, Window.this));
+                    }
+                    
+                    VFXNodeUtils.removeFromParent(Window.this);
+                    
+                    if (getOnClosedAction()!=null) {
+                        getOnClosedAction().handle(new ActionEvent(this, Window.this));
+                    }
+                }
+            }
+        });
+        st.play();
+    }
+
+    /**
+     * @return the onClosedActionProperty
+     */
+    public ObjectProperty<EventHandler<ActionEvent>> onClosedActionProperty() {
+        return onClosedActionProperty;
+    }
+
+    /**
+     * @param onClosedActionProperty the onClosedActionProperty to set
+     */
+    public void setOnClosedAction(EventHandler<ActionEvent> onClosedAction) {
+        this.onClosedActionProperty.set(onClosedAction);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public EventHandler<ActionEvent> getOnClosedAction() {
+        return this.onClosedActionProperty.get();
+    }
+    
+    /**
+     * @return the onClosedActionProperty
+     */
+    public ObjectProperty<EventHandler<ActionEvent>> onCloseActionProperty() {
+        return onCloseActionProperty;
+    }
+
+    /**
+     * @param onClosedActionProperty the onClosedActionProperty to set
+     */
+    public void setOnCloseAction(EventHandler<ActionEvent> onClosedAction) {
+        this.onCloseActionProperty.set(onClosedAction);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public EventHandler<ActionEvent> getOnCloseAction() {
+        return this.onCloseActionProperty.get();
     }
 }
