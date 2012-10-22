@@ -6,6 +6,7 @@ package eu.mihosoft.vrl.fxwindows;
 
 import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
+import javafx.animation.Transition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -82,18 +83,22 @@ public class Window extends Control {
      */
     private StringProperty titleBarStyleClassProperty =
             new SimpleStringProperty("window-titlebar");
-    
     /**
-     * 
+     * defines the action that shall be performed before the window is closed.
      */
     private ObjectProperty<EventHandler<ActionEvent>> onCloseActionProperty =
             new SimpleObjectProperty<EventHandler<ActionEvent>>();
-    
     /**
-     * 
+     * defines the action that shall be performed after the window has been
+     * closed.
      */
     private ObjectProperty<EventHandler<ActionEvent>> onClosedActionProperty =
             new SimpleObjectProperty<EventHandler<ActionEvent>>();
+    /**
+     * defines the transition that shall be played when closing the window.
+     */
+    private ObjectProperty<Transition> closeTransitionProperty =
+            new SimpleObjectProperty<Transition>();
 
     /**
      * Constructor.
@@ -135,6 +140,42 @@ public class Window extends Control {
                 setLayoutY(y);
             }
         });
+
+        closeTransitionProperty.addListener(new ChangeListener<Transition>() {
+            @Override
+            public void changed(ObservableValue<? extends Transition> ov, Transition t, Transition t1) {
+                t1.statusProperty().addListener(new ChangeListener<Animation.Status>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Animation.Status> observableValue,
+                            Animation.Status oldValue, Animation.Status newValue) {
+
+                        if (newValue == Animation.Status.STOPPED) {
+
+                            if (getOnCloseAction() != null) {
+                                getOnCloseAction().handle(new ActionEvent(this, Window.this));
+                            }
+
+                            VFXNodeUtils.removeFromParent(Window.this);
+
+                            if (getOnClosedAction() != null) {
+                                getOnClosedAction().handle(new ActionEvent(this, Window.this));
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        ScaleTransition st = new ScaleTransition();
+        st.setNode(this);
+        st.setFromX(1);
+        st.setFromY(1);
+        st.setToX(0);
+        st.setToY(0);
+        st.setDuration(Duration.seconds(0.2));
+
+        setCloseTransition(st);
+
     }
 
     @Override
@@ -332,77 +373,109 @@ public class Window extends Control {
         return resizableBorderWidthProperty.get();
     }
 
+    /**
+     * Closes this window.
+     */
     public void close() {
-        ScaleTransition st = new ScaleTransition();
-        st.setNode(this);
-        st.setFromX(1);
-        st.setFromY(1);
-        st.setToX(0);
-        st.setToY(0);
-        st.setDuration(Duration.seconds(0.2));
-        st.statusProperty().addListener(new ChangeListener<Animation.Status>() {
-            @Override
-            public void changed(ObservableValue<? extends Animation.Status> observableValue,
-                    Animation.Status oldValue, Animation.Status newValue) {
-                
-                if (newValue == Animation.Status.STOPPED) {
-                    
-                    if (getOnCloseAction()!=null) {
-                        getOnCloseAction().handle(new ActionEvent(this, Window.this));
-                    }
-                    
-                    VFXNodeUtils.removeFromParent(Window.this);
-                    
-                    if (getOnClosedAction()!=null) {
-                        getOnClosedAction().handle(new ActionEvent(this, Window.this));
-                    }
-                }
-            }
-        });
-        st.play();
+        if (getCloseTransition() != null) {
+            getCloseTransition().play();
+        } else {
+            VFXNodeUtils.removeFromParent(Window.this);
+        }
     }
 
     /**
-     * @return the onClosedActionProperty
+     * Returns the "on-closed-action" property.
+     *
+     * @return the "on-closed-action" property.
+     *
+     * @see #setOnClosedAction(javafx.event.EventHandler)
      */
     public ObjectProperty<EventHandler<ActionEvent>> onClosedActionProperty() {
         return onClosedActionProperty;
     }
 
     /**
-     * @param onClosedActionProperty the onClosedActionProperty to set
+     * Defines the action that shall be performed after the window has been
+     * closed.
+     *
+     * @param onClosedActionProperty the action to set
      */
     public void setOnClosedAction(EventHandler<ActionEvent> onClosedAction) {
         this.onClosedActionProperty.set(onClosedAction);
     }
 
     /**
+     * Returns the action that shall be performed after the window has been
+     * closed.
      *
-     * @return
+     * @return the action that shall be performed after the window has been
+     * closed or <code>null</code> if no such action has been defined
      */
     public EventHandler<ActionEvent> getOnClosedAction() {
         return this.onClosedActionProperty.get();
     }
-    
+
     /**
-     * @return the onClosedActionProperty
+     * Returns the "on-close-action" property.
+     *
+     * @return the "on-close-action" property.
+     *
+     * @see #setOnCloseAction(javafx.event.EventHandler)
      */
     public ObjectProperty<EventHandler<ActionEvent>> onCloseActionProperty() {
         return onCloseActionProperty;
     }
 
     /**
-     * @param onClosedActionProperty the onClosedActionProperty to set
+     * Defines the action that shall be performed before the window will be
+     * closed.
+     *
+     * @param onClosedActionProperty the action to set
      */
     public void setOnCloseAction(EventHandler<ActionEvent> onClosedAction) {
         this.onCloseActionProperty.set(onClosedAction);
     }
 
     /**
+     * Returns the action that shall be performed before the window will be
+     * closed.
      *
-     * @return
+     * @return the action that shall be performed before the window will be
+     * closed or <code>null</code> if no such action has been defined
      */
     public EventHandler<ActionEvent> getOnCloseAction() {
         return this.onCloseActionProperty.get();
+    }
+
+    /**
+     * Returns the "close-transition" property.
+     *
+     * @return the "close-transition" property.
+     *
+     * @see #setCloseTransition(javafx.animation.Transition) 
+     */
+    public ObjectProperty<Transition> closeTransitionProperty() {
+        return closeTransitionProperty;
+    }
+
+    /**
+     * Defines the transition that shall be used to indicate window closing.
+     *
+     * @param t the transition that shall be used to indicate window closing or
+     * <code>null</code> if no transition shall be used.
+     */
+    public void setCloseTransition(Transition t) {
+        closeTransitionProperty.set(t);
+    }
+
+    /**
+     * Returns the transition that shall be used to indicate window closing.
+     *
+     * @return the transition that shall be used to indicate window closing or
+     * <code>null</code> if no such transition has been defined
+     */
+    public Transition getCloseTransition() {
+        return closeTransitionProperty.get();
     }
 }
