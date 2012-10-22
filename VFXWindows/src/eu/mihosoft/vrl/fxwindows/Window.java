@@ -31,7 +31,8 @@ import javafx.util.Duration;
 /**
  * Window control. A window control is a window node as known from Swing, e.g
  * {@link javax.swing.JInternalFrame}. It can be used to realize MDI based
- * applications.
+ * applications. See <a href=https://github.com/miho/VFXWindows-Samples>
+ * https://github.com/miho/VFXWindows-Samples</a> for sample code.
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
@@ -453,7 +454,7 @@ public class Window extends Control {
      *
      * @return the "close-transition" property.
      *
-     * @see #setCloseTransition(javafx.animation.Transition) 
+     * @see #setCloseTransition(javafx.animation.Transition)
      */
     public ObjectProperty<Transition> closeTransitionProperty() {
         return closeTransitionProperty;
