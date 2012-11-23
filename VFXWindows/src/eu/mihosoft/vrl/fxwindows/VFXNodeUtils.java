@@ -6,6 +6,7 @@ package eu.mihosoft.vrl.fxwindows;
 
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
@@ -62,8 +63,16 @@ public class VFXNodeUtils {
     public static void removeFromParent(Node n) {
         if (n.getParent() instanceof Group) {
             ((Group)n.getParent()).getChildren().remove(n);
-        } else if (n.getParent() instanceof Region) {
+        } else if (n.getParent() instanceof Pane) {
             ((Pane)n.getParent()).getChildren().remove(n);
+        }
+    }
+    
+     public static void addToParent(Parent p, Node n) {
+        if (p instanceof Group) {
+            ((Group)p).getChildren().add(n);
+        } else if (p instanceof Pane) {
+            ((Pane)p).getChildren().add(n);
         }
     }
 }
