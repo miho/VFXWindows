@@ -20,9 +20,8 @@ public class VFXNodeUtils {
     private VFXNodeUtils() {
         throw new AssertionError(); // not in this class either!
     }
-    
-    // we probably don't need this scale stuff anymore (since 2.2)
 
+    // we probably don't need this scale stuff anymore (since 2.2)
 //    /**
 //     * Returns the global scale of the specified node.
 //     *
@@ -59,20 +58,40 @@ public class VFXNodeUtils {
 //
 //        return scale;
 //    }
-    
     public static void removeFromParent(Node n) {
         if (n.getParent() instanceof Group) {
-            ((Group)n.getParent()).getChildren().remove(n);
+            ((Group) n.getParent()).getChildren().remove(n);
         } else if (n.getParent() instanceof Pane) {
-            ((Pane)n.getParent()).getChildren().remove(n);
+            ((Pane) n.getParent()).getChildren().remove(n);
         }
     }
-    
-     public static void addToParent(Parent p, Node n) {
+
+    public static void addToParent(Parent p, Node n) {
         if (p instanceof Group) {
-            ((Group)p).getChildren().add(n);
+            ((Group) p).getChildren().add(n);
         } else if (p instanceof Pane) {
-            ((Pane)p).getChildren().add(n);
+            ((Pane) p).getChildren().add(n);
         }
+    }
+
+    public static Node getNode(Parent p, double sceneX, double sceneY, Class<?> nodeClass) {
+//        Node result = null;
+
+        for (Node n : p.getChildrenUnmodifiable()) {
+            boolean contains = n.contains(n.sceneToLocal(sceneX, sceneY));
+
+            if (contains) {
+                
+                if (nodeClass.isAssignableFrom(n.getClass())) {
+                    return n;
+                }
+
+                if (n instanceof Parent) {
+                    return getNode((Parent) n, sceneX, sceneY, nodeClass);
+                }
+            }
+        }
+
+        return null;
     }
 }
