@@ -54,26 +54,26 @@ public class WindowUtil {
         draggingController.apply(n, dragHandler, pressHandler);
     }
 }
-class MouseEventHandlerGroup extends EventHandlerGroup<MouseEvent> {
-    //
-}
-
-class EventHandlerGroup<T extends Event> implements EventHandler<T> {
-
-    private Collection<EventHandler<T>> handlers =
-            new ArrayList<EventHandler<T>>();
-
-    public void addHandler(EventHandler<T> eventHandler) {
-        handlers.add(eventHandler);
-    }
-
-    @Override
-    public void handle(T t) {
-        for (EventHandler<T> eventHandler : handlers) {
-            eventHandler.handle(t);
-        }
-    }
-}
+//class MouseEventHandlerGroup extends EventHandlerGroup<MouseEvent> {
+//    //
+//}
+//
+//class EventHandlerGroup<T extends Event> implements EventHandler<T> {
+//
+//    private Collection<EventHandler<T>> handlers =
+//            new ArrayList<EventHandler<T>>();
+//
+//    public void addHandler(EventHandler<T> eventHandler) {
+//        handlers.add(eventHandler);
+//    }
+//
+//    @Override
+//    public void handle(T t) {
+//        for (EventHandler<T> eventHandler : handlers) {
+//            eventHandler.handle(t);
+//        }
+//    }
+//}
 
 class DraggingControllerImpl {
 
