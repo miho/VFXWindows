@@ -4,11 +4,13 @@
  */
 package eu.mihosoft.vrl.fxwindows;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 
 /**
  *
@@ -74,10 +76,14 @@ public class VFXNodeUtils {
         }
     }
 
-    public static Node getNode(Parent p, double sceneX, double sceneY, Class<?> nodeClass) {
-//        Node result = null;
+    public static Node getNode(Parent p, double sceneX, double sceneY, Class<?> nodeClass) {    
+        
+        // dammit! javafx uses wrong children order.
+        List<Node> rightOrder = new ArrayList<Node>();
+        rightOrder.addAll(p.getChildrenUnmodifiable());
+        Collections.reverse(rightOrder);
 
-        for (Node n : p.getChildrenUnmodifiable()) {
+        for (Node n : rightOrder) {
             boolean contains = n.contains(n.sceneToLocal(sceneX, sceneY));
 
             if (contains) {
